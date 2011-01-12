@@ -1,3 +1,7 @@
 So yeah, nothing too revolutionary going on here—it's a simple carousel plugin that supports dynamic layouts.
 
-As it stands now, the hook that ties the next/prev links to the carousel in question is the href and the carousel's id.
+As it stands now, the hook that ties the next/prev links to the carousel in question is the href and the carousel's id. 
+
+Still to come: 
+- Next/prev actions should be hooked into events rather than function calls.
+- Touch and swipe events for mobile.
