@@ -7,7 +7,7 @@
 			nextSlide: '.next',
 			speed: 500
 		},
-		opt = $.extend(defaults, config);
+		opt = $.extend(defaults, config),
 		transitionSupport = document.body.style.webkitTransition !== undefined || 
 				    document.body.style.MozTransition !== undefined ||
 				    document.body.style.msTransition !== undefined ||
@@ -53,7 +53,6 @@
 			var $el = $(this),
 				link = $el.attr('href'),
 				$target = $(opt.slider).filter(link);
-// $target = $(opt.slider).filter("[data-slider='" + $el.attr('data-slider') + "']");
 
 				$(opt.nextSlide).each(function() {
 					if($(this)[0] == $el[0]) {
