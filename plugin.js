@@ -8,12 +8,20 @@
 			speed: 500
 		},
 		opt = $.extend(defaults, config),
+<<<<<<< HEAD
 		dStyle = document.body.style,
 		transitionSupport = dStyle.webkitTransition !== undefined || 
 				    dStyle.MozTransition !== undefined ||
 				    dStyle.msTransition !== undefined ||
 				    dStyle.OTransition !== undefined ||
 				    dStyle.transition !== undefined;
+=======
+		transitionSupport = document.body.style.webkitTransition !== undefined || 
+				    document.body.style.MozTransition !== undefined ||
+				    document.body.style.msTransition !== undefined ||
+				    document.body.style.OTransition !== undefined ||
+				    document.body.style.transition !== undefined;
+>>>>>>> 913912769e471e4280d0278f551143065d59bc76
 
 		$(opt.prevSlide).addClass('disabled');
 
@@ -45,6 +53,7 @@
 			var $el = $(this),
 				link = $el.attr('href'),
 				$target = $(opt.slider).filter(link);
+<<<<<<< HEAD
 				
 				if(!$el.hasClass('disabled')) {
 					$(opt.nextSlide).each(function() {
@@ -57,6 +66,30 @@
 							}).removeClass('disabled');
 						}
 					});
+=======
+
+				$(opt.nextSlide).each(function() {
+					if($(this)[0] == $el[0]) {
+						if(moveNext($target) === false) {
+							$el.addClass('disabled');
+						};
+						$(opt.prevSlide).filter(function() { 
+							return this.getAttribute('href') === link;
+						}).removeClass('disabled');
+					}
+				});
+
+				$(opt.prevSlide).each(function() {
+					if($(this)[0] == $el[0]) {
+						if(movePrev($target) === false) {
+							$el.addClass('disabled');
+						};
+						$(opt.nextSlide).filter(function() {
+							return this.getAttribute('href') === link;
+						}).removeClass('disabled');
+					}
+				});
+>>>>>>> 913912769e471e4280d0278f551143065d59bc76
 
 					$(opt.prevSlide).each(function() {
 						 if(this == $el[0]) {
@@ -70,6 +103,11 @@
 					});
 				}
 			e.preventDefault();
+		});
+
+		//swipes trigger move left/right
+		$( this ).live( "swipe", function( e, ui ){
+			( ui.direction === "left" ? moveNext : movePrev )( $(this).find( opt.slider ) );
 		});
 
 		return this.each(function() {
@@ -98,5 +136,64 @@
 				width: (100 / slidenum) + "%"				
 			});		
 		});
+	};
+	
+	
+	//modified swipe events from jQuery Mobile
+	// also handles swipeleft, swiperight
+	$.event.special.swipe = {
+		setup: function() {
+			var thisObject = this,
+				$this = $( thisObject );
+			
+			$this
+				.bind( "touchstart", function( event ) {
+					var data = event.originalEvent.touches ?
+							event.originalEvent.touches[ 0 ] :
+							event,
+						start = {
+							time: (new Date).getTime(),
+							coords: [ data.pageX, data.pageY ],
+							origin: $( event.target )
+						},
+						stop;
+					
+					function moveHandler( event ) {
+						if ( !start ) {
+							return;
+						}
+						
+						var data = event.originalEvent.touches ?
+								event.originalEvent.touches[ 0 ] :
+								event;
+						stop = {
+								time: (new Date).getTime(),
+								coords: [ data.pageX, data.pageY ]
+						};
+						
+						// prevent scrolling
+						if ( Math.abs( start.coords[0] - stop.coords[0] ) > 10 ) {
+							event.preventDefault();
+						}
+					}
+					
+					$this
+						.bind( "touchmove", moveHandler )
+						.one( "touchend", function( event ) {
+							$this.unbind( "touchmove", moveHandler );
+							if ( start && stop ) {
+								if ( stop.time - start.time < 1000 && 
+										Math.abs( start.coords[0] - stop.coords[0]) > 30 &&
+										Math.abs( start.coords[1] - stop.coords[1]) < 75 ) {
+										var left = start.coords[0] > stop.coords[0];
+									start.origin
+									.trigger( "swipe", {direction: left ? "left" : "right"} )
+									.trigger( left ? "swipeleft" : "swiperight" );
+								}
+							}
+							start = stop = undefined;
+						});
+				});
+		}
 	};
 })(jQuery);
