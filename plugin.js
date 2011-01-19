@@ -7,76 +7,68 @@
 			nextSlide: '.next',
 			speed: 500
 		},
-		opt = $.extend(defaults, config);
-		transitionSupport = document.body.style.webkitTransition !== undefined || 
-				    document.body.style.MozTransition !== undefined ||
-				    document.body.style.msTransition !== undefined ||
-				    document.body.style.OTransition !== undefined ||
-				    document.body.style.transition !== undefined;
+		opt = $.extend(defaults, config),
+		dStyle = document.body.style,
+		transitionSupport = dStyle.webkitTransition !== undefined || 
+				    dStyle.MozTransition !== undefined ||
+				    dStyle.msTransition !== undefined ||
+				    dStyle.OTransition !== undefined ||
+				    dStyle.transition !== undefined;
 
 		$(opt.prevSlide).addClass('disabled');
 
-		function moveNext($slider) {
+		function move($slider, direction) {
 			var leftmargin = $slider.attr('style').match(/margin\-left: ?(.*)%;/) && parseFloat(RegExp.$1),
 				$slide = $slider.find(opt.slide);
 
-			if (!$slider.is(":animated") && (-leftmargin) != (($slide.length - 1) * 100)) {
-				leftmargin -= 100;
+			if(!$slider.is(":animated")) {	
+				if(direction == 'next') {
+					leftmargin -= 100;
+				} else {
+					leftmargin += 100;
+				}
+				
 				if(transitionSupport) {
 					$slider.css('marginLeft', leftmargin + "%");
 				} else {
 					$slider.animate({ marginLeft: leftmargin + "%" }, opt.speed);
 				}
-				if((-leftmargin) == ($slide.length - 1) * 100) {
+								
+				if((-leftmargin) == ($slide.length - 1) * 100 || leftmargin == 0) {
 					return false;
 				}
 			}
 		}
 
-		function movePrev($slider) {
-			var leftmargin = $slider.attr('style').match(/margin\-left: ?(.*)%;/) && parseFloat(RegExp.$1);
-
-			if(!$slider.is(":animated") && (leftmargin != 0)) {
-				leftmargin += 100;
-				if(transitionSupport) {
-					$slider.css('marginLeft', leftmargin + "%");
-				} else {
-					$slider.animate({ marginLeft: leftmargin + "%" }, opt.speed);
-				}					
-				if(leftmargin == 0) {
-					return false;
-				}
-			}
-		}
 
 		$(opt.nextSlide + ',' + opt.prevSlide).click(function(e) {
 			var $el = $(this),
 				link = $el.attr('href'),
 				$target = $(opt.slider).filter(link);
-// $target = $(opt.slider).filter("[data-slider='" + $el.attr('data-slider') + "']");
+				
+				if(!$el.hasClass('disabled')) {
+					$(opt.nextSlide).each(function() {
+						 if(this == $el[0]) {
+							if(move($target, 'next') === false) {
+								$el.addClass('disabled');
+							};
+							$(opt.prevSlide).filter(function() { 
+								return this.getAttribute('href') === link;
+							}).removeClass('disabled');
+						}
+					});
 
-				$(opt.nextSlide).each(function() {
-					if($(this)[0] == $el[0]) {
-						if(moveNext($target) === false) {
-							$el.addClass('disabled');
-						};
-						$(opt.prevSlide).filter(function() { 
-							return this.getAttribute('href') === link;
-						}).removeClass('disabled');
-					}
-				});
-
-				$(opt.prevSlide).each(function() {
-					if($(this)[0] == $el[0]) {
-						if(movePrev($target) === false) {
-							$el.addClass('disabled');
-						};
-						$(opt.nextSlide).filter(function() {
-							return this.getAttribute('href') === link;
-						}).removeClass('disabled');
-					}
-				});
-
+					$(opt.prevSlide).each(function() {
+						 if(this == $el[0]) {
+							if(move($target, 'prev') === false) {
+								$el.addClass('disabled');
+							};
+							$(opt.nextSlide).filter(function() {
+								return this.getAttribute('href') === link;
+							}).removeClass('disabled');
+						}
+					});
+				}
 			e.preventDefault();
 		});
 
