@@ -8,20 +8,12 @@
 			speed: 500
 		},
 		opt = $.extend(defaults, config),
-<<<<<<< HEAD
 		dStyle = document.body.style,
 		transitionSupport = dStyle.webkitTransition !== undefined || 
 				    dStyle.MozTransition !== undefined ||
 				    dStyle.msTransition !== undefined ||
 				    dStyle.OTransition !== undefined ||
 				    dStyle.transition !== undefined;
-=======
-		transitionSupport = document.body.style.webkitTransition !== undefined || 
-				    document.body.style.MozTransition !== undefined ||
-				    document.body.style.msTransition !== undefined ||
-				    document.body.style.OTransition !== undefined ||
-				    document.body.style.transition !== undefined;
->>>>>>> 913912769e471e4280d0278f551143065d59bc76
 
 		$(opt.prevSlide).addClass('disabled');
 
@@ -53,8 +45,7 @@
 			var $el = $(this),
 				link = $el.attr('href'),
 				$target = $(opt.slider).filter(link);
-<<<<<<< HEAD
-				
+		
 				if(!$el.hasClass('disabled')) {
 					$(opt.nextSlide).each(function() {
 						 if(this == $el[0]) {
@@ -66,7 +57,6 @@
 							}).removeClass('disabled');
 						}
 					});
-=======
 
 				$(opt.nextSlide).each(function() {
 					if($(this)[0] == $el[0]) {
@@ -89,20 +79,8 @@
 						}).removeClass('disabled');
 					}
 				});
->>>>>>> 913912769e471e4280d0278f551143065d59bc76
-
-					$(opt.prevSlide).each(function() {
-						 if(this == $el[0]) {
-							if(move($target, 'prev') === false) {
-								$el.addClass('disabled');
-							};
-							$(opt.nextSlide).filter(function() {
-								return this.getAttribute('href') === link;
-							}).removeClass('disabled');
-						}
-					});
-				}
-			e.preventDefault();
+			}
+		        e.preventDefault();
 		});
 
 		//swipes trigger move left/right
