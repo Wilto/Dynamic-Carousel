@@ -99,7 +99,7 @@
 			});
 			$slider.css({
 				marginLeft: "0px",
-				styleFloat: "left",
+				float: "left",
 				width: 100 * slidenum + "%",
 				"-webkit-transition": "margin-left " + speed + "s ease",
 				"-moz-transition": "margin-left " + speed + "s ease",
@@ -119,52 +119,47 @@
 	// also handles swipeleft, swiperight
 	$.event.special.swipe = {
 		setup: function() {
-			var thisObject = this,
-				$this = $( thisObject );
+			var $el = $(this);
 			
-			$this
-				.bind( "touchstart", function( event ) {
-					var data = event.originalEvent.touches ?
-							event.originalEvent.touches[ 0 ] :
-							event,
+			$el
+				.bind("touchstart", function(e) {
+					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
 						start = {
 							time: (new Date).getTime(),
 							coords: [ data.pageX, data.pageY ],
-							origin: $( event.target )
+							origin: $(e.target)
 						},
 						stop;
 					
-					function moveHandler( event ) {
-						if ( !start ) {
+					function moveHandler(e) {
+						if(!start) {
 							return;
 						}
 						
-						var data = event.originalEvent.touches ?
-								event.originalEvent.touches[ 0 ] :
-								event;
+						var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
 						stop = {
 								time: (new Date).getTime(),
 								coords: [ data.pageX, data.pageY ]
 						};
 						
 						// prevent scrolling
-						if ( Math.abs( start.coords[0] - stop.coords[0] ) > 10 ) {
-							event.preventDefault();
+						if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+							e.preventDefault();
 						}
 					}
 					
-					$this
-						.bind( "touchmove", moveHandler )
-						.one( "touchend", function( event ) {
-							$this.unbind( "touchmove", moveHandler );
-							if ( start && stop ) {
-								if ( stop.time - start.time < 1000 && 
-										Math.abs( start.coords[0] - stop.coords[0]) > 30 &&
-										Math.abs( start.coords[1] - stop.coords[1]) < 75 ) {
+					$el
+						.bind("touchmove", moveHandler)
+						.one("touchend", function(e) {
+							$el.unbind("touchmove", moveHandler);
+							if (start && stop) {
+								if (stop.time - start.time < 1000 && 
+										Math.abs(start.coords[0] - stop.coords[0]) > 30 &&
+										Math.abs(start.coords[1] - stop.coords[1]) < 75) {
 										var left = start.coords[0] > stop.coords[0];
 									start.origin
-									.trigger( "swipe", {direction: left ? "left" : "right"} )
-									.trigger( left ? "swipeleft" : "swiperight" );
+										.trigger("swipe", {direction: left ? "left" : "right"})
+										.trigger(left ? "swipeleft" : "swiperight" );
 								}
 							}
 							start = stop = undefined;
