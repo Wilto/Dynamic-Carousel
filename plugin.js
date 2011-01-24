@@ -24,9 +24,6 @@
 			if (!$slider.is(":animated") && (-leftmargin) != (($slide.length - 1) * 100)) {
 				leftmargin -= 100;
 				
-				alert(leftmargin);
-				alert($slider.attr('style'));
-				
 				if(transitionSupport) {
 					$slider.css('marginLeft', leftmargin + "%");
 				} else {
@@ -43,9 +40,6 @@
 
 			if(!$slider.is(":animated") && (leftmargin != 0)) {
 				leftmargin += 100;
-
-				alert(leftmargin);
-				alert($slider.attr('style'));
 
 				if(transitionSupport) {
 					$slider.css('marginLeft', leftmargin + "%");
@@ -102,8 +96,7 @@
 				speed = opt.speed / 1000;
 
 			$wrap.css({
-				overflow: "hidden",
-				width: '100%'
+				overflow: "hidden"
 			});
 			
 			$slider.css({
