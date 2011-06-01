@@ -10,82 +10,47 @@
 		opt = $.extend(defaults, config),
 		dStyle = document.body.style,
 		transitionSupport = dStyle.webkitTransition !== undefined || 
-				    dStyle.MozTransition !== undefined ||
+				    dStyle.mozTransition !== undefined ||
 				    dStyle.msTransition !== undefined ||
-				    dStyle.OTransition !== undefined ||
-				    dStyle.transition !== undefined;
-
-		$(opt.prevSlide).addClass('disabled');
-
-		function moveNext($slider) {
+				    dStyle.oTransition !== undefined ||
+				    dStyle.transition !== undefined,
+				
+		move = function($slider, dir) {
 			var leftmargin = $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1),
-				$slide = $slider.find(opt.slide);
+				$slide = $slider.find(opt.slide),
+				constrain = ( dir === 'prev' ? leftmargin != 0 : -leftmargin != ($slide.length - 1) * 100 );
 			
-			if (!$slider.is(":animated") && (-leftmargin) != (($slide.length - 1) * 100)) {
-				leftmargin -= 100;
+			if (!$slider.is(":animated") && constrain ) {
+				leftmargin = ( dir === 'prev' ) ? leftmargin + 100 : leftmargin - 100;
 				
 				if(transitionSupport) {
 					$slider.css('marginLeft', leftmargin + "%");
 				} else {
 					$slider.animate({ marginLeft: leftmargin + "%" }, opt.speed);
 				}
-				if((-leftmargin) == ($slide.length - 1) * 100) {
+				if((-leftmargin) == ($slide.length - 1) * 100 || leftmargin == 0 ) {
 					return false;
 				}
 			}
-		}
-
-		function movePrev($slider) {
-			var leftmargin = $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1);
-
-			if(!$slider.is(":animated") && (leftmargin != 0)) {
-				leftmargin += 100;
-
-				if(transitionSupport) {
-					$slider.css('marginLeft', leftmargin + "%");
-				} else {
-					$slider.animate({ marginLeft: leftmargin + "%" }, opt.speed);
-				}					
-				if(leftmargin == 0) {
-					return false;
-				}
-			}
-		}
+		};
 
 		$(opt.nextSlide + ',' + opt.prevSlide).click(function(e) {
 			var $el = $(this),
 				link = $el.attr('href'),
+				dir = ($el.is( opt.prevSlide ) ) ? 'prev' : 'next',
 				$target = $(opt.slider).filter(link);
 
-				$(opt.nextSlide).each(function() {
-					if($(this)[0] == $el[0]) {
-						if(moveNext($target) === false) {
-							$el.addClass('disabled');
-						};
-						$(opt.prevSlide).filter(function() { 
-							return this.getAttribute('href') === link;
-						}).removeClass('disabled');
-					}
-				});
-
-				$(opt.prevSlide).each(function() {
-					if($(this)[0] == $el[0]) {
-						if(movePrev($target) === false) {
-							$el.addClass('disabled');
-						};
-						$(opt.nextSlide).filter(function() {
-							return this.getAttribute('href') === link;
-						}).removeClass('disabled');
-					}
-				});
-
+				if(move($target, dir) === false) {
+					$el.addClass('disabled');
+				};
+				
 			e.preventDefault();
 		});
-
+		$(opt.prevSlide).addClass('disabled');
 
 		//swipes trigger move left/right
 		$(this).live( "swipe", function(e, ui){
-			(ui.direction === "left" ? moveNext : movePrev)($(this).find( opt.slider ));
+			move($(this).find( opt.slider ), (ui.direction === "left" ? 'next' : 'prev'));
 		});
 
 		return this.each(function() {
@@ -116,43 +81,39 @@
 			});		
 		});
 	};
-	
-	
+		
 	//modified swipe events from jQuery Mobile
 	// also handles swipeleft, swiperight
 	$.event.special.swipe = {
 		setup: function() {
 			var $el = $(this);
 			
-			$el
-				.bind("touchstart", function(e) {
+			$el.bind("touchstart", function(e) {
 					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
 						start = {
 							time: (new Date).getTime(),
 							coords: [ data.pageX, data.pageY ],
 							origin: $(e.target)
 						},
-						stop;
-					
-					function moveHandler(e) {
-						if(!start) {
-							return;
-						}
+						stop,
+						moveHandler = function(e) {
+							if(!start) {
+								return;
+							}
 						
-						var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
-						stop = {
-								time: (new Date).getTime(),
-								coords: [ data.pageX, data.pageY ]
+							var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
+							stop = {
+									time: (new Date).getTime(),
+									coords: [ data.pageX, data.pageY ]
+							};
+						
+							// prevent scrolling
+							if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+								e.preventDefault();
+							}
 						};
-						
-						// prevent scrolling
-						if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
-							e.preventDefault();
-						}
-					}
 					
-					$el
-						.bind("touchmove", moveHandler)
+					$el.bind("touchmove", moveHandler)
 						.one("touchend", function(e) {
 							$el.unbind("touchmove", moveHandler);
 							if (start && stop) {
@@ -167,7 +128,7 @@
 							}
 							start = stop = undefined;
 						});
-				});
+			});
 		}
 	};
 })(jQuery);
