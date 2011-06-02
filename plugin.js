@@ -18,8 +18,9 @@
 		move = function($slider, dir) {
 			var leftmargin = $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1),
 				$slide = $slider.find(opt.slide),
-				constrain = ( dir === 'prev' ? leftmargin != 0 : -leftmargin != ($slide.length - 1) * 100 );
-			
+				constrain = ( dir === 'prev' ? leftmargin != 0 : -leftmargin != ($slide.length - 1) * 100 ),
+				$target = $( '[href="#' + $slider.attr('id') + '"]');
+
 			if (!$slider.is(":animated") && constrain ) {
 				leftmargin = ( dir === 'prev' ) ? leftmargin + 100 : leftmargin - 100;
 				
@@ -28,8 +29,16 @@
 				} else {
 					$slider.animate({ marginLeft: leftmargin + "%" }, opt.speed);
 				}
-				if((-leftmargin) == ($slide.length - 1) * 100 || leftmargin == 0 ) {
-					return false;
+				
+				switch( leftmargin ) {
+					case ( -($slide.length - 1) * 100 ):
+						$target.filter(opt.nextSlide).addClass('disabled');
+						break;
+					case 0:
+						$target.filter(opt.prevSlide).addClass('disabled');
+						break;
+					default:
+						$target.removeClass('disabled');
 				}
 			}
 		};
@@ -37,12 +46,14 @@
 		$(opt.nextSlide + ',' + opt.prevSlide).click(function(e) {
 			var $el = $(this),
 				link = $el.attr('href'),
-				dir = ($el.is( opt.prevSlide ) ) ? 'prev' : 'next',
-				$target = $(opt.slider).filter(link);
+				dir = ( $el.is(opt.prevSlide) ) ? 'prev' : 'next',
+				$slider = $(link);
 
-				if(move($target, dir) === false) {
-					$el.addClass('disabled');
-				};
+				if ( $el.is('.disabled') ) { 
+					return false;
+				}
+
+				move($slider, dir);
 				
 			e.preventDefault();
 		});
@@ -50,7 +61,10 @@
 
 		//swipes trigger move left/right
 		$(this).live( "swipe", function(e, ui){
-			move($(this).find( opt.slider ), (ui.direction === "left" ? 'next' : 'prev'));
+			var $slider = $(this).find( opt.slider ),
+				dir = ( ui.direction === "left" ) ? 'next' : 'prev';
+
+			move($slider, dir);
 		});
 
 		return this.each(function() {
