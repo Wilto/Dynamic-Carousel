@@ -74,7 +74,7 @@
 					return false;
 				}
 
-				move($slider, dir);
+				nextPrev($slider, dir);
 				
 			e.preventDefault();
 		});
@@ -188,5 +188,3 @@
 		}
 	};
 })(jQuery);
-
-
