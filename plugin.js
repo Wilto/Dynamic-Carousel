@@ -1,5 +1,28 @@
 (function($){
 	$.fn.carousel = function(config) {
+		carousel = {
+			roundDown : function(leftmargin) {
+				var leftmargin = parseInt(leftmargin, 10);
+				
+				return Math.ceil( (leftmargin - (leftmargin % 100 ) ) / 100) * 100;
+			},
+			transitionSupport : function() {
+				var dStyle = document.body.style;
+				
+				return dStyle.webkitTransition !== undefined || 
+						dStyle.mozTransition !== undefined ||
+						dStyle.msTransition !== undefined ||
+						dStyle.oTransition !== undefined ||
+						dStyle.transition !== undefined;
+			},
+			move : function($slider, moveTo) {
+				if(carousel.transitionSupport) {
+					$slider.css('marginLeft', moveTo + "%");
+				} else {
+					$slider.animate({ marginLeft: moveTo + "%" }, opt.speed);
+				}
+			}
+		};
 		var defaults = {
 			slider: '.slider',
 			slide: '.slide',
@@ -8,27 +31,21 @@
 			speed: 500
 		},
 		opt = $.extend(defaults, config),
-		dStyle = document.body.style,
-		transitionSupport = dStyle.webkitTransition !== undefined || 
-				    dStyle.mozTransition !== undefined ||
-				    dStyle.msTransition !== undefined ||
-				    dStyle.oTransition !== undefined ||
-				    dStyle.transition !== undefined,
-				
-		move = function($slider, dir) {
+		nextPrev = function($slider, dir) {
 			var leftmargin = $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1),
 				$slide = $slider.find(opt.slide),
-				constrain = ( dir === 'prev' ? leftmargin != 0 : -leftmargin != ($slide.length - 1) * 100 ),
+				constrain = dir === 'prev' ? leftmargin != 0 : -leftmargin < ($slide.length - 1) * 100,
 				$target = $( '[href="#' + $slider.attr('id') + '"]');
-
+								
 			if (!$slider.is(":animated") && constrain ) {
-				leftmargin = ( dir === 'prev' ) ? leftmargin + 100 : leftmargin - 100;
-				
-				if(transitionSupport) {
-					$slider.css('marginLeft', leftmargin + "%");
+								
+				if ( dir === 'prev' ) {
+					leftmargin = ( leftmargin % 100 != 0 ) ? carousel.roundDown(leftmargin) : leftmargin + 100;
 				} else {
-					$slider.animate({ marginLeft: leftmargin + "%" }, opt.speed);
+					leftmargin = ( ( leftmargin % 100 ) != 0 ) ? carousel.roundDown(leftmargin) - 100 : leftmargin - 100;
 				}
+				
+				carousel.move($slider, leftmargin);
 				
 				switch( leftmargin ) {
 					case ( -($slide.length - 1) * 100 ):
@@ -40,6 +57,10 @@
 					default:
 						$target.removeClass('disabled');
 				}
+			} else {
+				var reset = carousel.roundDown(leftmargin);
+				
+				carousel.move($slider, reset);
 			}
 		};
 
@@ -60,11 +81,11 @@
 		$(opt.prevSlide).addClass('disabled');
 
 		//swipes trigger move left/right
-		$(this).live( "swipe", function(e, ui){
+		$(this).live( "dragSnap", function(e, ui){
 			var $slider = $(this).find( opt.slider ),
 				dir = ( ui.direction === "left" ) ? 'next' : 'prev';
-
-			move($slider, dir);
+				
+			nextPrev($slider, dir);
 		});
 
 		return this.each(function() {
@@ -96,53 +117,76 @@
 		});
 	};
 		
-	//modified swipe events from jQuery Mobile
-	// also handles swipeleft, swiperight
-	$.event.special.swipe = {
+
+	$.event.special.dragSnap = {
 		setup: function() {
 			var $el = $(this);
-			
-			$el.bind("touchstart", function(e) {
+
+			$el
+				.bind("touchstart", function(e) {
 					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
 						start = {
 							time: (new Date).getTime(),
 							coords: [ data.pageX, data.pageY ],
-							origin: $(e.target)
+							origin: $(e.target).closest('.slidewrap')
 						},
 						stop,
-						moveHandler = function(e) {
-							if(!start) {
-								return;
-							}
-						
-							var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
-							stop = {
-									time: (new Date).getTime(),
-									coords: [ data.pageX, data.pageY ]
-							};
-						
-							// prevent scrolling
-							if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
-								e.preventDefault();
-							}
+						$tEl = $(e.target).closest('.slider'),
+						currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0;
+
+					function moveHandler(e) {
+						if(!start) {
+							return;
+						}
+											
+						var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
+
+						stop = {
+								time: (new Date).getTime(),
+								coords: [ data.pageX, data.pageY ]
 						};
-					
-					$el.bind("touchmove", moveHandler)
+
+						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });						
+
+						// prevent scrolling
+						if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+							e.preventDefault();
+						}
+					};
+
+					$el
+						.bind("touchmove", moveHandler)
 						.one("touchend", function(e) {
+
 							$el.unbind("touchmove", moveHandler);
+
 							if (start && stop) {
-								if (stop.time - start.time < 1000 && 
-										Math.abs(start.coords[0] - stop.coords[0]) > 30 &&
-										Math.abs(start.coords[1] - stop.coords[1]) < 75) {
-										var left = start.coords[0] > stop.coords[0];
-									start.origin
-										.trigger("swipe", {direction: left ? "left" : "right"})
-										.trigger(left ? "swipeleft" : "swiperight" );
+								
+								if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+									e.preventDefault();
+								}
+
+								if (Math.abs(start.coords[0] - stop.coords[0]) > 1 && Math.abs(start.coords[1] - stop.coords[1]) < 75) {
+									var left = start.coords[0] > stop.coords[0];
+
+								if( -( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) || ( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) ) {
+
+									start.origin.css("marginLeft", 0).trigger("dragSnap", {direction: left ? "left" : "right"});
+
+									} else {										
+										var currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
+											leftmargin = (left === false) ? carousel.roundDown(currentPos) - 100 : carousel.roundDown(currentPos);
+											
+										carousel.move($tEl, leftmargin);
+									}
+
 								}
 							}
 							start = stop = undefined;
 						});
-			});
+				});
 		}
 	};
 })(jQuery);
+
+
