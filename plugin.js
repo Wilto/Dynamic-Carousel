@@ -30,6 +30,7 @@
 					$slider.animate({ marginLeft: leftmargin + "%" }, opt.speed);
 				}
 				
+				$target.removeClass('disabled');
 				switch( leftmargin ) {
 					case ( -($slide.length - 1) * 100 ):
 						$target.filter(opt.nextSlide).addClass('disabled');
@@ -37,8 +38,6 @@
 					case 0:
 						$target.filter(opt.prevSlide).addClass('disabled');
 						break;
-					default:
-						$target.removeClass('disabled');
 				}
 			}
 		};
