@@ -16,7 +16,7 @@
 						dStyle.transition !== undefined;
 			},
 			move : function($slider, moveTo) {
-				if(carousel.transitionSupport) {
+				if(carousel.transitionSupport()) {
 					$slider.css('marginLeft', moveTo + "%");
 				} else {
 					$slider.animate({ marginLeft: moveTo + "%" }, opt.speed);
@@ -96,7 +96,8 @@
 				speed = opt.speed / 1000;
 
 			$wrap.css({
-				overflow: "hidden"
+				overflow: "hidden",
+				width: "100%"
 			});
 			
 			$slider.css({
