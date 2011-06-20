@@ -44,10 +44,10 @@
 				} else {
 					leftmargin = ( ( leftmargin % 100 ) != 0 ) ? carousel.roundDown(leftmargin) - 100 : leftmargin - 100;
 				}
-				
+
 				carousel.move($slider, leftmargin);
 				$target.removeClass('disabled');
-				
+
 				switch( leftmargin ) {
 					case ( -($slide.length - 1) * 100 ):
 						$target.filter(opt.nextSlide).addClass('disabled');
