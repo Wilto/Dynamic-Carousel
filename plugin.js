@@ -16,7 +16,7 @@
 						dStyle.transition !== undefined;
 			},
 			move : function($slider, moveTo) {
-				if(carousel.transitionSupport) {
+				if(carousel.transitionSupport()) {
 					$slider.css('marginLeft', moveTo + "%");
 				} else {
 					$slider.animate({ marginLeft: moveTo + "%" }, opt.speed);
@@ -46,7 +46,8 @@
 				}
 				
 				carousel.move($slider, leftmargin);
-				
+				$target.removeClass('disabled');
+
 				switch( leftmargin ) {
 					case ( -($slide.length - 1) * 100 ):
 						$target.filter(opt.nextSlide).addClass('disabled');
@@ -54,8 +55,6 @@
 					case 0:
 						$target.filter(opt.prevSlide).addClass('disabled');
 						break;
-					default:
-						$target.removeClass('disabled');
 				}
 			} else {
 				var reset = carousel.roundDown(leftmargin);
@@ -96,7 +95,8 @@
 				speed = opt.speed / 1000;
 
 			$wrap.css({
-				overflow: "hidden"
+				overflow: "hidden",
+				width: "100%"
 			});
 			
 			$slider.css({
@@ -188,5 +188,3 @@
 		}
 	};
 })(jQuery);
-
-
