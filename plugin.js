@@ -46,7 +46,8 @@
 				}
 				
 				carousel.move($slider, leftmargin);
-				
+				$target.removeClass('disabled');
+
 				switch( leftmargin ) {
 					case ( -($slide.length - 1) * 100 ):
 						$target.filter(opt.nextSlide).addClass('disabled');
@@ -54,8 +55,6 @@
 					case 0:
 						$target.filter(opt.prevSlide).addClass('disabled');
 						break;
-					default:
-						$target.removeClass('disabled');
 				}
 			} else {
 				var reset = carousel.roundDown(leftmargin);
