@@ -32,7 +32,7 @@
 		},
 		opt = $.extend(defaults, config),
 		nextPrev = function($slider, dir) {
-			var leftmargin = $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1),
+			var leftmargin = ( $slider ) ? $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
 				$slide = $slider.find(opt.slide),
 				constrain = dir === 'prev' ? leftmargin != 0 : -leftmargin < ($slide.length - 1) * 100,
 				$target = $( '[href="#' + $slider.attr('id') + '"]');
