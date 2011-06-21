@@ -16,7 +16,7 @@
 						dStyle.transition !== undefined;
 			},
 			move : function($slider, moveTo) {
-				if(carousel.transitionSupport()) {
+				if( carousel.transitionSupport() ) {
 					$slider.css('marginLeft', moveTo + "%");
 				} else {
 					$slider.animate({ marginLeft: moveTo + "%" }, opt.speed);
@@ -33,6 +33,7 @@
 		opt = $.extend(defaults, config),
 		nextPrev = function($slider, dir) {
 			var leftmargin = ( $slider ) ? $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
+
 				$slide = $slider.find(opt.slide),
 				constrain = dir === 'prev' ? leftmargin != 0 : -leftmargin < ($slide.length - 1) * 100,
 				$target = $( '[href="#' + $slider.attr('id') + '"]');
@@ -44,7 +45,7 @@
 				} else {
 					leftmargin = ( ( leftmargin % 100 ) != 0 ) ? carousel.roundDown(leftmargin) - 100 : leftmargin - 100;
 				}
-				
+
 				carousel.move($slider, leftmargin);
 				$target.removeClass('disabled');
 
@@ -188,3 +189,5 @@
 		}
 	};
 })(jQuery);
+
+
