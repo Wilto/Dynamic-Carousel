@@ -33,7 +33,6 @@
 		opt = $.extend(defaults, config),
 		nextPrev = function($slider, dir) {
 			var leftmargin = ( $slider ) ? $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
-
 				$slide = $slider.find(opt.slide),
 				constrain = dir === 'prev' ? leftmargin != 0 : -leftmargin < ($slide.length - 1) * 100,
 				$target = $( '[href="#' + $slider.attr('id') + '"]');
@@ -45,7 +44,7 @@
 				} else {
 					leftmargin = ( ( leftmargin % 100 ) != 0 ) ? carousel.roundDown(leftmargin) - 100 : leftmargin - 100;
 				}
-
+				
 				carousel.move($slider, leftmargin);
 				$target.removeClass('disabled');
 
@@ -121,10 +120,18 @@
 
 	$.event.special.dragSnap = {
 		setup: function() {
-			var $el = $(this);
+			var $el = $(this),
+				snapBack = function($tEl, left) {
+					var currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
+						leftmargin = carousel.roundDown(currentPos);
+					//	leftmargin = (left === false) ? carousel.roundDown(currentPos) - 100 : carousel.roundDown(currentPos);
+					
+					carousel.move($tEl, leftmargin);	
+				};
 
 			$el
 				.bind("touchstart", function(e) {
+					
 					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
 						start = {
 							time: (new Date).getTime(),
@@ -136,29 +143,22 @@
 						currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0;
 
 					function moveHandler(e) {
-						if(!start) {
+						if( !start ) {
 							return;
 						}
-											
-						var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
-
+						
 						stop = {
 								time: (new Date).getTime(),
 								coords: [ data.pageX, data.pageY ]
 						};
 
-						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });						
-
-						// prevent scrolling
-						if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
-							e.preventDefault();
-						}
+						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
 					};
 
 					$el
 						.bind("touchmove", moveHandler)
 						.one("touchend", function(e) {
-
+							
 							$el.unbind("touchmove", moveHandler);
 
 							if (start && stop) {
@@ -175,10 +175,7 @@
 									start.origin.css("marginLeft", 0).trigger("dragSnap", {direction: left ? "left" : "right"});
 
 									} else {										
-										var currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
-											leftmargin = (left === false) ? carousel.roundDown(currentPos) - 100 : carousel.roundDown(currentPos);
-											
-										carousel.move($tEl, leftmargin);
+										snapBack($tEl);
 									}
 
 								}
@@ -189,5 +186,3 @@
 		}
 	};
 })(jQuery);
-
-
