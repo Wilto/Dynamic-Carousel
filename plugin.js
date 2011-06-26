@@ -197,7 +197,7 @@
 		if( opt.pagination ) {
 			carousel.createPagination(this);
 		}
-		
+
 		return this.each(function(carInt) {
 			var $wrap = $(this),
 				$slider = $wrap.find(opt.slider),
@@ -227,14 +227,18 @@
 					width: (100 / slidenum) + "%"				
 				})
 				.each(function(i) {
-					var tmp = 'carousel' + ( carInt + 1 ),
+					var $el = $(this),
+						tmp = 'carousel' + ( carInt + 1 ),
 						i = i + 1;
 
-					$(this).attr({
+					$el.attr({
 						role : "tabpanel",
-						id : tmp + '-slide' + i,
-						'aria-labelledby' : tmp + '-tab' + i
+						id : tmp + '-slide' + i
 					});
+					
+					if( opt.pagination ) {
+						$el.attr('aria-labelledby', tmp + '-tab' + i);
+					}
 				});
 			
 			carousel.navState($slider, 0);
