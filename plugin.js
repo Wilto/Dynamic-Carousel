@@ -52,7 +52,22 @@
 						var i = slides + 1;
 
 						$pagination.prepend('<li><a href="#carousel' + current + '-slide' + i +'" id="carousel' 
-						+ current + '-tab' + i + '" role="tab" tabindex="-1" aria-selected="false">' + i + '</a></li>');
+						+ current + '-tab' + i + '" role="tab" tabindex="-1" aria-selected="false">Page ' + i + '</a></li>');
+
+/* 
+	I don’t like that the above links don’t contain meaningful text. I’m thinking about introducing
+	a data- attribute or user-controllable selector that could be used to pull in a heading’s text—even if that heading 
+	is hidden in a screen-reader accessible kind of way, something like:
+
+	.a11y-only {
+		position: absolute;
+		left: -9999px;
+	}
+
+	<h1 class="panel-hed a11y-only">A Meaningful Tabpanel Heading</h1>
+
+	And then grab the contents of .panel-hed and use it to populate the link accordingly.
+*/
 					}
 
 					$pagination.find("li").keydown(function(e) {
@@ -183,7 +198,8 @@
 					$(opt.nextSlide).filter('[href="' + link + '"]').trigger('click').focus();
 					break;
 			}
-		});;
+		});
+
 		$(opt.prevSlide).addClass('disabled');
 
 		//swipes trigger move left/right
@@ -240,9 +256,8 @@
 						$el.attr('aria-labelledby', tmp + '-tab' + i);
 					}
 				});
-			
-			carousel.navState($slider, 0);
 
+			carousel.navState($slider, 0);
 		});
 
 	};
