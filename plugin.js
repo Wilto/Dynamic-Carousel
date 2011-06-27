@@ -8,7 +8,8 @@
 			nextSlide: '.next',
 			speed: 500
 		},
-		opt = $.extend(defaults, config),
+		opt = $.extend(defaults, config);
+		
 		carousel = {
 			roundDown : function(leftmargin) {
 				var leftmargin = parseInt(leftmargin, 10);
