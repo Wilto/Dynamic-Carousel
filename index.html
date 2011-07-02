@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<!--[if lt IE 7 ]> <html lang="en" class="no-js ie ie6"> <![endif]-->
-<!--[if IE 7 ]>    <html lang="en" class="no-js ie ie7"> <![endif]-->
-<!--[if IE 8 ]>    <html lang="en" class="no-js ie ie8"> <![endif]-->
-<!--[if IE 9 ]>    <html lang="en" class="no-js ie ie9"> <![endif]-->
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
 	<head>
 		<meta charset="utf-8" />
@@ -14,30 +14,6 @@
 		<style type="text/css" media="screen">
 			ul { margin: 0; padding: 0; list-style: none; }		
 			a.disabled { color: #aaa; }
-
-			.carousel-tabs {
-				padding: 0;
-				clear: both;
-			}
-			.carousel-tabs li {
-			    display: inline-block; 
-			    padding: 0 2px;
-			}
-			.carousel-tabs a {
-			    background: #ddd;
-			    display: inline-block;
-			    height: 10px;
-			    text-indent: -9999px;
-			    width: 10px;
-			    border-radius: 5px;
-			}
-			.ie .carousel-tabs li,
-			.ie .carousel-tabs a { 
-				display: inline;
-			}
-			.carousel-tabs .current a {
-				background: #777;
-			}
 		</style>
 	</head>
 	<body>
@@ -49,11 +25,11 @@
 		</ul>
 		<ul class="slider" id="sliderName">
 			<li class="slide">	
-				<h2><a href="#">First Slide</a></h2>
+				<h2>First Slide</h2>
 				<p>In hac habitasse platea dictumst. Nam pulvinar, odio sed rhoncus suscipit, sem diam ultrices mauris, eu consequat purus metus eu velit. Proin metus odio, aliquam eget molestie nec, gravida ut sapien. Phasellus quis est sed turpis sollicitudin venenatis sed eu odio. Praesent eget neque eu eros interdum malesuada non vel leo. Sed fringilla porta ligula egestas tincidunt. Nullam risus magna, ornare vitae varius eget, scelerisque a libero.</p>
 			</li>
 			<li class="slide">	
-				<h2><a href="#">Second Slide</a></h2>
+				<h2>Second Slide</h2>
 				<p>In hac habitasse platea dictumst. Nam pulvinar, odio sed rhoncus suscipit, sem diam ultrices mauris, eu consequat purus metus eu velit. Proin metus odio, aliquam eget molestie nec, gravida ut sapien.</p>
 			</li>
 			<li class="slide">	
@@ -107,7 +83,6 @@
 			$('.slidewrap').carousel({
 				slider: '.slider',
 				slide: '.slide',
-				pagination: true,
 				nextSlide: '.next',
 				prevSlide: '.prev',
 				speed: 300 // ms.
