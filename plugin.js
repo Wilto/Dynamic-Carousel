@@ -25,6 +25,25 @@
 						dStyle.oTransition !== undefined ||
 						dStyle.transition !== undefined;
 			},
+			transitionSwap : function($el, tog) {
+				var speed = opt.speed / 1000,
+					transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
+
+				$el.css({
+					"-webkit-transition": transition,
+					"-moz-transition": transition,
+					"-ms-transition": transition,
+					"-o-transition": transition,
+					"transition": transition
+				});
+			},
+			snapBack : function($el, left) {
+				var currentPos = ( $el.attr('style') != undefined ) ? $el.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
+					leftmargin = (left === false) ? carousel.roundDown(currentPos) - 100 : carousel.roundDown(currentPos);
+
+				carousel.transitionSwap($el, true);
+				carousel.move($el, leftmargin);	
+			},
 			nextPrev : function($slider, dir) {
 				var leftmargin = ( $slider ) ? $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
 					$slide = $slider.find(opt.slide),
@@ -230,13 +249,8 @@
 			$slider.css({
 				marginLeft: "0px",
 				float: "left",
-				width: 100 * slidenum + "%",
-				"-webkit-transition": "margin-left " + speed + "s ease",
-				"-moz-transition": "margin-left " + speed + "s ease",
-				"-ms-transition": "margin-left " + speed + "s ease",
-				"-o-transition": "margin-left " + speed + "s ease",
-				"transition": "margin-left " + speed + "s ease"
-			});	
+				width: 100 * slidenum + "%"
+			});
 				    
 			$slide
 				.css({
@@ -259,24 +273,17 @@
 				});
 
 			carousel.navState($slider, 0);
+			carousel.transitionSwap($slider, true);
 		});
 
 	};
 		
 	$.event.special.dragSnap = {
 		setup: function() {
-			var $el = $(this),
-				snapBack = function($tEl, left) {
-					var currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
-						leftmargin = carousel.roundDown(currentPos);
-					//	leftmargin = (left === false) ? carousel.roundDown(currentPos) - 100 : carousel.roundDown(currentPos);
-					
-					carousel.move($tEl, leftmargin);	
-				};
+			var $el = $(this);
 
 			$el
 				.bind("touchstart", function(e) {
-					
 					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
 						start = {
 							time: (new Date).getTime(),
@@ -287,35 +294,48 @@
 						$tEl = $(e.target).closest('.slider'),
 						currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0;
 
+					carousel.transitionSwap($tEl, false);
+
 					function moveHandler(e) {
-						if( !start ) {
-							return;
-						}
-						
+						var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
 						stop = {
-							time: (new Date).getTime(),
-							coords: [ data.pageX, data.pageY ]
+								time: (new Date).getTime(),
+								coords: [ data.pageX, data.pageY ]
 						};
-						
-						if( e.originalEvent.touches.length > 1 ) {
-							snapBack($tEl);							
+
+						if(!start || Math.abs(start.coords[0] - stop.coords[0]) < Math.abs(start.coords[1] - stop.coords[1]) ) {
 							return;
 						}
 
-						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
+						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });						
+
+						// prevent scrolling
+						if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+							e.preventDefault();
+						}
 
 					};
 
 					$el
+						.bind("gesturestart", function(e) {
+							$el
+								.unbind("touchmove", moveHandler)
+								.unbind("touchend", moveHandler);
+						})
 						.bind("touchmove", moveHandler)
 						.one("touchend", function(e) {
-							
-							$el.unbind("touchmove", moveHandler);
 
-							if (start && stop) {
-								
-								if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+							$el.unbind("touchmove", moveHandler);
+							carousel.transitionSwap($tEl, true);
+
+							if (start && stop ) {
+
+								if (Math.abs(start.coords[0] - stop.coords[0]) > 10
+									&& Math.abs(start.coords[0] - stop.coords[0]) > Math.abs(start.coords[1] - stop.coords[1])) {
 									e.preventDefault();
+								} else {
+									carousel.snapBack($tEl, true);
+									return;
 								}
 
 								if (Math.abs(start.coords[0] - stop.coords[0]) > 1 && Math.abs(start.coords[1] - stop.coords[1]) < 75) {
@@ -325,8 +345,8 @@
 
 									start.origin.css("marginLeft", 0).trigger("dragSnap", {direction: left ? "left" : "right"});
 
-									} else {										
-										snapBack($tEl);
+									} else {								
+										carousel.snapBack($tEl, left);
 									}
 
 								}
