@@ -1,3 +1,5 @@
+/*! (c) Mat Marquis (@wilto). MIT License. http://wil.to/3a */
+
 (function($){
 	$.fn.carousel = function(config) {
 		carousel = {
