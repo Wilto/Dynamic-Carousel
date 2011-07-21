@@ -5,7 +5,7 @@ If there's one thing that can compete with lightboxes for “world’s most done
 We got pagination, we got generated navigation, we got keyboard support, and we got accessibility for days.
 
 ### Pagination
-You’ll notice there’s now an ```addPagination``` option. This loops through the slides and generates a list of fully—ARIA’d links to each slide, complete with keyboard support (arrow keys). There’s an associated ```slideHed``` option, which you’ll see in play on the first carousel—this allows you to use the value of an element within the slide as the text in the associated link. If none is specified, you get “Page 1,” “Page 2,” and so on, but that isn’t very helpful to a screen reader. Definitely think about using the ```slideHed``` option—even if you’re planning on hiding the text using ```text-indent``` or somesuch. Even in-page links should be meaningful.
+You’ll notice there’s now an ```addPagination``` option. This loops through the slides and generates a list of fully-ARIA’d links to each slide, complete with keyboard support (arrow keys). There’s an associated ```slideHed``` option, which you’ll see in play on the first carousel—this allows you to use the value of an element within the slide as the text in the associated link. If none is specified, you get “Page 1,” “Page 2,” and so on, but that isn’t very helpful to a screen reader. Definitely think about using the ```slideHed``` option—even if you’re planning on hiding the text using ```text-indent``` or somesuch. Even in-page links should be meaningful.
 
 I styled one of the examples, for the hell of it. You are free to steal this.
 
@@ -25,7 +25,7 @@ Needs another pass in JAWS, but it’s a lot more usable from a screenreader per
 It does this for you. 
 
 ## It’s Gonna Get Realer
-Improvements to the dragSnap event are coming down the Pike, thanks to one Mr. @scottjehl.
+Improvements to the dragSnap event are coming down the Pike, thanks to one Mr. <a href="https://github.com/scottjehl">Scott Jehl</a>.
 
 ## “Dynamic?” Isn’t that a little “DHTML for Dummies?”
 I’m takin’ it back.
