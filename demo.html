@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
-<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
-<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
-<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7 ]> <html lang="en" class="ie"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="ie"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="ie"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="ie"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en"> <!--<![endif]-->
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" /> 
@@ -20,6 +20,7 @@
 			
 			.slidewrap2 .carousel-tabs {
 				padding: 0;
+				margin: 1em 0;
 				clear: both;
 			}
 			.slidewrap2 .carousel-tabs li {
@@ -36,7 +37,8 @@
 			}
 			.ie .slidewrap2 .carousel-tabs li,
 			.ie .slidewrap2 .carousel-tabs a { 
-				display: inline;
+				display: block;
+				float: left;
 			}
 			.slidewrap2 .carousel-tabs .carousel-active-tab a {
 				background: #777;
