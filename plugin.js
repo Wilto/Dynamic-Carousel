@@ -1,8 +1,11 @@
 /*! (c) Mat Marquis (@wilto). MIT License. http://wil.to/3a */
 
 (function( $, undefined ) {
+	$.fn.getPercentage = function() {
+		return this.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1);
+	};
+	
 	var inst = 0;
-
 	$.fn.carousel = function(config) {
 		var defaults = {
 			slider			: '.slider',
@@ -228,7 +231,7 @@
 				carousel.navState($slider, moveTo);
 			},
 			nextPrev : function($slider, dir) {
-				var leftmargin = ( $slider ) ? $slider.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
+				var leftmargin = ( $slider ) ? $slider.getPercentage() : 0,
 					$slide = $slider.find(opt.slide),
 					constrain = dir === 'prev' ? leftmargin != 0 : -leftmargin < ($slide.length - 1) * 100,
 					$target = $( '[href="#' + $slider.attr('id') + '"]');
@@ -308,7 +311,7 @@
 				auto,
 				autoAdvance = function() {
 					var slidenum = $el.find(opt.slide).length,
-						active = -(parseInt($(opt.slider).css('marginLeft'), 10) / 100) + 1;
+						active = -($(opt.slider).getPercentage() / 100) + 1;
 					
 					switch( active ) {
 						case slidenum: 
@@ -374,7 +377,7 @@ $.event.special.dragSnap = {
 			},
 			snapBack = function(e, ui) {
 				var $el = ui.target,
-					currentPos = ( $el.attr('style') != undefined ) ? $el.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0,
+					currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
 					leftmargin = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
 					dStyle = document.body.style,
 					transitionSupport = dStyle.webkitTransition !== undefined || 
@@ -403,7 +406,7 @@ $.event.special.dragSnap = {
 					},
 					stop,
 					$tEl = $(e.target).closest('.slider'),
-					currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1) : 0;
+					currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.getPercentage() : 0;
 				
 				transitionSwap($tEl, false);
 
