@@ -25,7 +25,9 @@ Needs another pass in JAWS, but it’s a lot more usable from a screenreader per
 It does this for you. 
 
 ## It’s Gonna Get Realer
-Improvements to the dragSnap event are coming down the Pike, thanks to one Mr. <a href="https://github.com/scottjehl">Scott Jehl</a>.
+Improvements to the dragSnap event are coming down the Pike, thanks to one Mr. <a href="https://github.com/scottjehl">Scott Jehl</a>—mo’ smoother transitions, less chance of the slider getting snagged somewhere, etc.
+
+<a href="https://github.com/richardwiggins">Richard Wiggins</a> has pointed out that one should be able to link to a specific slide. I dig it. It’s gonna happen.
 
 ## “Dynamic?” Isn’t that a little “DHTML for Dummies?”
 I’m takin’ it back.
