@@ -7,6 +7,13 @@
 	
 	var inst = 0;
 	$.fn.carousel = function(config) {
+		
+		//prevent re-init
+		if( this.data( "carousel-initialized" ) ) { return; }
+		
+		//set data
+		this.data( "carousel-initialized", true );
+
 		var defaults = {
 			slider			: '.slider',
 			slide			: '.slide',
