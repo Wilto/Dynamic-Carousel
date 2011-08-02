@@ -17,6 +17,8 @@ This exists now. I was very hesitant, because I don’t generally like the idea 
 
 The auto-rotation stops on mouseover, as we can assume the user is interacting with the content at that point.
 
+Also, I should probably mention how this works! There’s a data-autorotate attribute on the first carousel on the demo page, with the rotation’s timing in milliseconds. So… Do that. I’m good at writing documentation, is the main idea here.
+
 ### Keyboard Support
 Arrow keys, when focus is on the next/prev links or the pagination tabs.
 
