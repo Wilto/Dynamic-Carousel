@@ -26,6 +26,9 @@ Arrow keys, when focus is on the next/prev links or the pagination tabs.
 Needs another pass in JAWS, but it’s a lot more usable from a screenreader perspective. You need not do a thing.
 It does this for you. 
 
+### Callback
+Pass an optional function in the ```callback``` param, and it will call it each time the carousel changes.
+
 ## It’s Gonna Get Realer
 Improvements to the dragSnap event are coming down the Pike, thanks to one Mr. <a href="https://github.com/scottjehl">Scott Jehl</a>—mo’ smoother transitions, less chance of the slider getting snagged somewhere, etc.
 
