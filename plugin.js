@@ -274,6 +274,10 @@
 
 					carousel.move($slider, reset);
 				}
+
+				if (opt.callback) {
+				  opt.callback();
+				}
 			}
 		};
 	
