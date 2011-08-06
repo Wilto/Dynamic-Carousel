@@ -290,6 +290,10 @@
 
 					$el.trigger("move", { moveTo: reset });
 				}
+
+				if (opt.callback) {
+				  opt.callback();
+				}
 			}
 		};
 	
