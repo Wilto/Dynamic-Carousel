@@ -1,17 +1,18 @@
 /*! (c) Mat Marquis (@wilto). MIT License. http://wil.to/3a */
 
 (function( $, undefined ) {
+	var inst = 0;
+	
 	$.fn.getPercentage = function() {
 		return this.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1);
 	};
 	
-	var inst = 0;
 	$.fn.carousel = function(config) {
 		
-		//prevent re-init
+		// Prevent re-init:
 		if( this.data( "carousel-initialized" ) ) { return; }
 		
-		//set data
+		// Carousel is being initialized:
 		this.data( "carousel-initialized", true );
 
 		var defaults = {
@@ -21,12 +22,18 @@
 			nextSlide		: null,
 			slideHed		: null,
 			addPagination	: false,
-			addNav			: (config !== undefined && (config.prevSlide || config.nextSlide)) ? false : true,
+			addNav			: ( config != undefined && ( config.prevSlide || config.nextSlide ) ) ? false : true,
 			namespace		: 'carousel',
 			speed			: 300
 		},
-		$slidewrap = this,
 		opt = $.extend(defaults, config),
+		$slidewrap = this,
+		dStyle = document.body.style,
+		transitionSupport = dStyle.webkitTransition !== undefined || 
+							dStyle.mozTransition !== undefined ||
+							dStyle.msTransition !== undefined ||
+							dStyle.OTransition !== undefined ||
+							dStyle.transition !== undefined,
 		carousel = {
 			init : function() {
 				inst++;
@@ -46,16 +53,23 @@
 							})
 							.attr('role', 'application');
 
-						$slider.css({
-							marginLeft: "0px",
-							float: "left",
-							width: 100 * slidenum + "%",
-							"-webkit-transition": transition,
-							"-moz-transition": transition,
-							"-ms-transition": transition,
-							"-o-transition": transition,
-							"transition": transition
-						});
+						$slider
+							.attr( 'id', ( $slider[0].id || 'carousel-' + inst + '-' + carInt ) )
+							.css({
+								marginLeft: "0px",
+								float: "left",
+								width: 100 * slidenum + "%",
+								"-webkit-transition": transition,
+								"-moz-transition": transition,
+								"-ms-transition": transition,
+								"-o-transition": transition,
+								"transition": transition
+							})
+							.bind({
+								move     : carousel.move,
+								nextprev : carousel.nextPrev,
+								navstate : carousel.navState 
+							});
 
 						$slide
 							.css({
@@ -74,51 +88,50 @@
 									$el.attr('aria-labelledby', tmp + '-tab' + i);
 								}
 							});
-					
-					if( !$slider[0].id ) {
-						$slider.attr('id', 'carousel-' + inst + '-' + carInt);
-					}
-										
-					// Build and insert navigation/pagination, if specified in the options.
-					opt.addPagination 	&& carousel.addPagination();
-					opt.addNav 			&& carousel.addNav();
-					
-					carousel.navState($slider, 0);
+	
+						// Build and insert navigation/pagination, if specified in the options:
+						opt.addPagination 	&& carousel.addPagination();
+						opt.addNav 			&& carousel.addNav();
+						
+						$slider.trigger( "navstate", { current: 0 });
 				});
 			},
 			addNav : function() {
 				$slidewrap.each(function(i) {						
 					var $oEl = $(this),
-						currentSlider = $oEl.find(opt.slider)[0].id,
+						$slider = $oEl.find(opt.slider),
+						currentSlider = $slider[0].id,
 						navMarkup = [
 							'<ul class="slidecontrols" role="navigation">',
 							'	<li role="presentation"><a href="#' + currentSlider + '" class="' + opt.namespace + '-next">Next</a></li>',
 							'	<li role="presentation"><a href="#' + currentSlider + '" class="' + opt.namespace + '-prev">Prev</a></li>',
 							'</ul>'
-							].join('');
+							].join(''),
+						nextprev = {
+							nextSlide : '.' + opt.namespace + '-next',
+							prevSlide : '.' + opt.namespace + '-prev'
+						};
 
-					opt.nextSlide = '.' + opt.namespace + '-next';
-					opt.prevSlide = '.' + opt.namespace + '-prev';
-
+					opt = $.extend(opt, nextprev);
+					
 					$oEl.prepend(navMarkup);
 				});
 			},
 			addPagination : function() {
 				$slidewrap.each(function(i) {
 					var $oEl = $(this),
+						$slider = $oEl.find(opt.slider),
 						$pagination = $('<ol class="' + opt.namespace + '-tabs" role="tablist navigation" />'),
 						slides = $oEl.find(opt.slide).length,
 						associated = 'carousel-' + inst + '-' + i;
 						
 					while( slides-- ) {
-						var i = slides,
-							hed = $($oEl.find(opt.slide)[i]).find(opt.slideHed).text() || 'Page ' + ( i + 1 ),
+						var hed = $( $oEl.find( opt.slide )[ slides ] ).find( opt.slideHed ).text() || 'Page ' + ( slides + 1 ),
 							tabMarkup = [
 								'<li role="presentation">',
-								'	<a href="#' + associated + '-slide' + i +'"',
-								' aria-controls="' + associated + '-slide' + i +'"',
-								' id="' + associated + '-tab' + i + '" role="tab">',
-								 hed + '</a>',
+									'<a href="#' + associated + '-slide' + slides +'"',
+									' aria-controls="' + associated + '-slide' + slides +'"',
+									' id="' + associated + '-tab' + slides + '" role="tab">' + hed + '</a>',
 								'</li>'
 							].join('');
 						
@@ -126,13 +139,13 @@
 					};
 
 					$pagination
-						.appendTo($oEl)
-						.find("li").keydown(function(e) {
+						.appendTo( $oEl )
+						.find('li').keydown( function(e) {
 							var $el = $(this),
 								$prevTab = $el.prev().find('a'),
 								$nextTab = $el.next().find('a');
 
-							switch (e.which) {
+							switch( e.which ) {
 								case 37:
 								case 38:		
 									$prevTab.length && $prevTab.trigger('click').focus();
@@ -144,63 +157,64 @@
 									e.preventDefault();
 									break;
 							}
-						}).find('a').click(function(e) {
-							var $el = $(this)
-								$tab = $el.parent(),
-								current = $tab.index(),
-								move = -(100 * (current)),
-								$slider = $oEl.find(opt.slider);
+						})
+						.find('a').click( function(e) {
+							var current = $(this).parent().index(),
+								move = -( 100 * ( current ) ),
+								$slider = $oEl.find( opt.slider );
 
-							carousel.move($slider, move);
-
+							$slider.trigger( "move", { moveTo: move });
 							e.preventDefault();
 						});
 				});
 			},
-			roundDown : function(leftmargin) {
-				var leftmargin = parseInt(leftmargin, 10);
+			roundDown : function(oVal) {
+				var val = parseInt(oVal, 10);
 
-				return Math.ceil( (leftmargin - (leftmargin % 100 ) ) / 100) * 100;
+				return Math.ceil( (val - (val % 100 ) ) / 100) * 100;
 			},
-			navState : function($slider, moveTo) {
-				var $target = $( '[href="#' + $slider.attr('id') + '"]');
-					$slides = $slider.find(opt.slide),
-					ind = -(moveTo / 100),
-					activeSlide = $slides[ind];
+			navState : function(e, ui) {
+				var $el = $(this),
+					$slides = $el.find(opt.slide),
+					ind = -(ui.current / 100),
+					$activeSlide = $($slides[ind]);
 					
-				$slider.attr('aria-activedescendant', activeSlide.id);
+				$el.attr('aria-activedescendant', $activeSlide[0].id);
 				
-				// Update state of active tabpanel
-				$(activeSlide)
-					.addClass(opt.namespace + "-active-slide")
-					.attr('aria-hidden', false)
+				// Update state of active tabpanel:
+				$activeSlide
+					.addClass( opt.namespace + "-active-slide" )
+					.attr( 'aria-hidden', false )
 						.find('*')
-						.removeAttr('tabindex')
+						.removeAttr( 'tabindex' )
 					.end()
 					.siblings()	
-						.removeClass(opt.namespace + "-active-slide")
-						.attr('aria-hidden', true)
+						.removeClass( opt.namespace + "-active-slide" )
+						.attr( 'aria-hidden', true )
 							.find('*')
-							.attr('tabindex', -1);
+							.attr( 'tabindex', -1 );
 
-				// Update state of next/prev navigation
-				if( opt.addNav || (opt.prevSlide || opt.nextSlide) ) {
-					$target.removeClass(opt.namespace + '-disabled');
-					switch( moveTo ) {
+				// Update state of next/prev navigation:
+				if( ( !!opt.prevSlide || !!opt.nextSlide ) ) {
+					var $target = $('[href="#' + this.id + '"]');
+					
+					$target.removeClass( opt.namespace + '-disabled' );
+					
+					switch( ui.current ) {
 						case ( -($slides.length - 1) * 100 ):
-							$target.filter(opt.nextSlide).addClass(opt.namespace + '-disabled');
+							$target.filter(opt.nextSlide).addClass( opt.namespace + '-disabled' );
 							break;
 						case 0:
-							$target.filter(opt.prevSlide).addClass(opt.namespace + '-disabled');
+							$target.filter(opt.prevSlide).addClass( opt.namespace + '-disabled' );
 							break;
 					}
 				}
-				
-				// Update state of pagination tabs.
-				if( opt.addPagination ) {
-					var tabId = $(activeSlide).attr('aria-labelledby'),
+								
+				// Update state of pagination tabs:
+				if( !!opt.addPagination ) {
+					var tabId = $activeSlide.attr('aria-labelledby'),
 						$tab = $('#' + tabId );
-						
+					
 					$tab
 						.parent()
 						.addClass(opt.namespace + '-active-tab')
@@ -218,46 +232,48 @@
 					});
 				}
 			},
-			move : function($slider, moveTo) {
-				var $slides = $slider.find(opt.slide),
-					current = -(moveTo / 100),
-					$activeSlide = $($slides[current]),
-					activeId = $slides[current].id,
-					dStyle = document.body.style,
-					transitionSupport = dStyle.webkitTransition !== undefined || 
-										dStyle.mozTransition !== undefined ||
-										dStyle.msTransition !== undefined ||
-										dStyle.oTransition !== undefined ||
-										dStyle.transition !== undefined;
+			move : function(e, ui) {
+				var $el = $(this);
+
+				$el.trigger(opt.namespace + "-beforemove");
+				
+				if( transitionSupport ) {					
+					$el.css('marginLeft', ui.moveTo + "%");
 					
-				if( transitionSupport ) {
-					$slider.css('marginLeft', moveTo + "%");
-				} else {
-					$slider.animate({ marginLeft: moveTo + "%" }, opt.speed);
+					$el.one("transitionend webkitTransitionEnd OTransitionEnd", function() {
+						$(this).trigger( opt.namespace + "-aftermove" );
+					});
+				} else {					
+					$el
+						.animate({ marginLeft: ui.moveTo + "%" }, opt.speed, function() {
+						$el.trigger( opt.namespace + "-aftermove" );
+					});
 				}
-				carousel.navState($slider, moveTo);
+			
+				$el.trigger("navstate", { current: ui.moveTo });
 			},
-			nextPrev : function($slider, dir) {
-				var leftmargin = ( $slider ) ? $slider.getPercentage() : 0,
-					$slide = $slider.find(opt.slide),
-					constrain = dir === 'prev' ? leftmargin != 0 : -leftmargin < ($slide.length - 1) * 100,
-					$target = $( '[href="#' + $slider.attr('id') + '"]');
+			nextPrev : function(e, ui) {
+				var $el = $(this),
+					left = ( $el ) ? $el.getPercentage() : 0,
+					$slide = $el.find(opt.slide),
+					constrain = ui.dir === 'prev' ? left != 0 : -left < ($slide.length - 1) * 100,
+					$target = $( '[href="#' + $el.attr('id') + '"]');
 
-				if (!$slider.is(":animated") && constrain ) {
+				if (!$el.is(":animated") && constrain ) {
 
-					if ( dir === 'prev' ) {
-						leftmargin = ( leftmargin % 100 != 0 ) ? carousel.roundDown(leftmargin) : leftmargin + 100;
+					if ( ui.dir === 'prev' ) {
+						left = ( left % 100 != 0 ) ? carousel.roundDown(left) : left + 100;
 					} else {
-						leftmargin = ( ( leftmargin % 100 ) != 0 ) ? carousel.roundDown(leftmargin) - 100 : leftmargin - 100;
+						left = ( ( left % 100 ) != 0 ) ? carousel.roundDown(left) - 100 : left - 100;
 					}
 
-					carousel.move($slider, leftmargin);
+					$el.trigger("move", { moveTo: left });
 
 					$target
 						.removeClass( opt.namespace + '-disabled')
 						.removeAttr('aria-disabled');
 
-					switch( leftmargin ) {
+					switch( left ) {
 						case ( -($slide.length - 1) * 100 ):
 							$target.filter(opt.nextSlide)
 								.addClass( opt.namespace + '-disabled')
@@ -270,9 +286,9 @@
 							break;
 					}
 				} else {
-					var reset = carousel.roundDown(leftmargin);
+					var reset = carousel.roundDown(left);
 
-					carousel.move($slider, reset);
+					$el.trigger("move", { moveTo: reset });
 				}
 			}
 		};
@@ -290,7 +306,7 @@
 						return false;
 					}
 
-					carousel.nextPrev($slider, dir);
+					$slider.trigger('nextprev', { dir: dir });
 				
 				e.preventDefault();
 			})
@@ -351,13 +367,14 @@
 				});
 		});
 
-		this.bind( "dragSnap", function(e, ui){
+		$slidewrap.bind( "dragSnap", function(e, ui){
 			var $slider = $(this).find( opt.slider ),
 				dir = ( ui.direction === "left" ) ? 'next' : 'prev';
 			
-			carousel.nextPrev($slider, dir);
+			$slider.trigger("nextprev", { dir: dir });	
 		});
 
+		return this;
 	};
 })(jQuery);
 
@@ -378,14 +395,14 @@ $.event.special.dragSnap = {
 				});
 			},
 			roundDown = function(left) {
-				var leftmargin = parseInt(left, 10);
+				var left = parseInt(left, 10);
 				
 				return Math.ceil( (left - (left % 100 ) ) / 100) * 100;
 			},
 			snapBack = function(e, ui) {
 				var $el = ui.target,
 					currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
-					leftmargin = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
+					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
 					dStyle = document.body.style,
 					transitionSupport = dStyle.webkitTransition !== undefined || 
 						dStyle.mozTransition !== undefined ||
@@ -396,9 +413,9 @@ $.event.special.dragSnap = {
 				transitionSwap($el, true);
 				
 				if( transitionSupport ) {
-					$el.css('marginLeft', leftmargin + "%");
+					$el.css('marginLeft', left + "%");
 				} else {
-					$el.animate({ marginLeft: leftmargin + "%" }, opt.speed);
+					$el.animate({ marginLeft: left + "%" }, opt.speed);
 				}
 			};
 

@@ -12,11 +12,13 @@
 		<meta name="description" content="There are many like it, but this one is mine." />
 		
 		<style type="text/css" media="screen">
+			body { padding-bottom: 5em; }
 			ul { margin: 0; padding: 0; list-style: none; }
 			
 			.carousel-tabs { clear: both; }
 			.carousel-active-tab { color: red; }	
-			.carousel-disabled { color: #aaa; }
+			.carousel-disabled,
+			.mr-rotato-disabled { color: #aaa; }
 			
 			.slidewrap2 .carousel-tabs {
 				padding: 0;
@@ -42,6 +44,10 @@
 			}
 			.slidewrap2 .carousel-tabs .carousel-active-tab a {
 				background: #777;
+			}
+			
+			.events {
+				font: normal 11px/1.4 arial, helvetica, sans-serif;
 			}
 			
 		</style>
@@ -127,9 +133,11 @@
 		</ul>
 	</div>
 	
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
-	<script type="text/javascript" src="plugin.js"></script>
-	<script type="text/javascript" charset="utf-8">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+
+
+	<script src="plugin.js"></script>
+	<script>
 		$(document).ready(function() {
 			$('.slidewrap').carousel({
 				slider: '.slider',
@@ -149,8 +157,18 @@
 				speed: 300 // ms.
 			});
 			
-			$('.slidewrap3').carousel();
-
+			$('.slidewrap3').carousel({ 
+					namespace: "mr-rotato" // Defaults to “carousel”.
+				})
+				.bind({
+					'mr-rotato-beforemove' : function() {
+						$('.events').append("<li>“beforemove” event fired.</li>");
+					},
+					'mr-rotato-aftermove' : function() {
+						$('.events').append("<li>“aftermove” event fired.</li>");
+					}
+				})
+				.after('<ul class="events">Events</ul>');
 		});
 	</script>
 	</body>
