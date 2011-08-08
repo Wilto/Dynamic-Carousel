@@ -157,7 +157,8 @@
 							}
 						})
 						.find('a').click( function(e) {
-							var current = $(this).parent().index(),
+							var $el = $(this),
+								current = $el.closest('[role*="tablist"]').find('li').index( $el.parent() ),
 								move = -( 100 * ( current ) ),
 								$slider = $oEl.find( opt.slider );
 
@@ -178,22 +179,15 @@
 					$activeSlide = $($slides[ind]);
 					
 				$el.attr('aria-activedescendant', $activeSlide[0].id);
-				
-				console.log( ind );
-				console.log( $activeSlide );
-				
+
 				// Update state of active tabpanel:
 				$activeSlide
 					.addClass( opt.namespace + "-active-slide" )
 					.attr( 'aria-hidden', false )
-					/*	.find('*')
-						.removeAttr( 'tabindex' ) */
-					.end()
 					.siblings()	
 						.removeClass( opt.namespace + "-active-slide" )
 						.attr( 'aria-hidden', true );
-				/*			.find('*')
-							.attr( 'tabindex', -1 ); */
+
 
 				// Update state of next/prev navigation:
 				if( ( !!opt.prevSlide || !!opt.nextSlide ) ) {
@@ -317,18 +311,17 @@
 				e.preventDefault();
 			})
 			.bind('keydown', function(e) {
-				var $el = $(this),
-					link = this.getAttribute('href');
+				var slider = this.getAttribute('href');
 
 				switch (e.which) {
 					case 37:
 					case 38:
-						$('#' + link).trigger('nextprev', { dir: 'next' });
+						$('#' + slider).trigger('nextprev', { dir: 'next' });
 						e.preventDefault();
 						break;
 					case 39:
 					case 40:
-						$('#' + link).trigger('nextprev', { dir: 'prev' });
+						$('#' + slider).trigger('nextprev', { dir: 'prev' });
 						e.preventDefault();
 						break;
 				}
