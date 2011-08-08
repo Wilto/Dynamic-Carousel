@@ -65,11 +65,9 @@
 								"-o-transition": transition,
 								"transition": transition
 							})
-							.bind({
-								move     : carousel.move,
-								nextprev : carousel.nextPrev,
-								navstate : carousel.navState 
-							});
+							.bind( 'move', carousel.move )
+							.bind( 'nextprev', carousel.nextPrev )
+							.bind( 'navstate', carousel.navState );
 
 						$slide
 							.css({
@@ -181,18 +179,21 @@
 					
 				$el.attr('aria-activedescendant', $activeSlide[0].id);
 				
+				console.log( ind );
+				console.log( $activeSlide );
+				
 				// Update state of active tabpanel:
 				$activeSlide
 					.addClass( opt.namespace + "-active-slide" )
 					.attr( 'aria-hidden', false )
-						.find('*')
-						.removeAttr( 'tabindex' )
+					/*	.find('*')
+						.removeAttr( 'tabindex' ) */
 					.end()
 					.siblings()	
 						.removeClass( opt.namespace + "-active-slide" )
-						.attr( 'aria-hidden', true )
-							.find('*')
-							.attr( 'tabindex', -1 );
+						.attr( 'aria-hidden', true );
+				/*			.find('*')
+							.attr( 'tabindex', -1 ); */
 
 				// Update state of next/prev navigation:
 				if( ( !!opt.prevSlide || !!opt.nextSlide ) ) {
@@ -237,15 +238,16 @@
 
 				$el.trigger(opt.namespace + "-beforemove");
 				
-				if( transitionSupport ) {					
+				if( transitionSupport ) {
+									
 					$el.css('marginLeft', ui.moveTo + "%");
 					
 					$el.one("transitionend webkitTransitionEnd OTransitionEnd", function() {
 						$(this).trigger( opt.namespace + "-aftermove" );
 					});
+					
 				} else {					
-					$el
-						.animate({ marginLeft: ui.moveTo + "%" }, opt.speed, function() {
+					$el.animate({ marginLeft: ui.moveTo + "%" }, opt.speed, function() {
 						$el.trigger( opt.namespace + "-aftermove" );
 					});
 				}
@@ -321,12 +323,12 @@
 				switch (e.which) {
 					case 37:
 					case 38:
-						$(opt.prevSlide).filter('[href="' + link + '"]').trigger('click').focus();
+						$('#' + link).trigger('nextprev', { dir: 'next' });
 						e.preventDefault();
 						break;
 					case 39:
 					case 40:
-						$(opt.nextSlide).filter('[href="' + link + '"]').trigger('click').focus();
+						$('#' + link).trigger('nextprev', { dir: 'prev' });
 						e.preventDefault();
 						break;
 				}
