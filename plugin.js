@@ -178,23 +178,15 @@
 					$activeSlide = $($slides[ind]);
 					
 				$el.attr('aria-activedescendant', $activeSlide[0].id);
-				
-				console.log( ind );
-				console.log( $activeSlide );
-				
+
 				// Update state of active tabpanel:
 				$activeSlide
 					.addClass( opt.namespace + "-active-slide" )
 					.attr( 'aria-hidden', false )
-					/*	.find('*')
-						.removeAttr( 'tabindex' ) */
-					.end()
 					.siblings()	
 						.removeClass( opt.namespace + "-active-slide" )
 						.attr( 'aria-hidden', true );
-				/*			.find('*')
-							.attr( 'tabindex', -1 ); */
-
+						
 				// Update state of next/prev navigation:
 				if( ( !!opt.prevSlide || !!opt.nextSlide ) ) {
 					var $target = $('[href="#' + this.id + '"]');
@@ -368,12 +360,16 @@
 			
 			$el
 				.attr('aria-live', 'polite')
-				.bind('mouseenter', function() {
+				.bind('mouseenter click touchstart', function() {
 					clearInterval(auto);
 				});
 		});
 
-		$slidewrap.bind( "dragSnap", function(e, ui){
+		var setup = {
+			wrap : this,
+			slider : opt.slider
+		};
+		$slidewrap.bind( "dragSnap", setup, function(e, ui){
 			var $slider = $(this).find( opt.slider ),
 				dir = ( ui.direction === "left" ) ? 'next' : 'prev';
 			
@@ -386,7 +382,8 @@
 
 
 $.event.special.dragSnap = {
-	setup: function(e, ui) {
+	setup: function(setup) {
+
 		var $el = $(this),
 			transitionSwap = function($el, tog) {
 				var speed = .3,
@@ -432,10 +429,10 @@ $.event.special.dragSnap = {
 					start = {
 						time: (new Date).getTime(),
 						coords: [ data.pageX, data.pageY ],
-						origin: $(e.target).closest('.slidewrap')
+						origin: $(e.target).closest( setup.wrap )
 					},
 					stop,
-					$tEl = $(e.target).closest('.slider'),
+					$tEl = $(e.target).closest( setup.slider ),
 					currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.getPercentage() : 0;
 				
 				transitionSwap($tEl, false);
