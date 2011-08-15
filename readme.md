@@ -27,7 +27,7 @@ Needs another pass in JAWS, but it’s a lot more usable from a screenreader per
 It does this for you. 
 
 ### Callback
-Pass an optional function in the ```callback``` param, and it will call it each time the carousel changes.
+The ```callback``` param, has been removed—you now have (namespaced) events to hook into! See the third carousel on the demo page for examples.
 
 ## It’s Gonna Get Realer
 Improvements to the dragSnap event are coming down the Pike, thanks to one Mr. <a href="https://github.com/scottjehl">Scott Jehl</a>—mo’ smoother transitions, less chance of the slider getting snagged somewhere, etc.
