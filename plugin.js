@@ -340,7 +340,7 @@
 					
 							auto = setInterval(function() {
 								autoAdvance();
-								$el.find(opt.prevSlide).trigger('click');
+								$el.find(opt.prevSlide).triggerHandler('click');
 							}, speed);
 							
 							break;
@@ -349,7 +349,7 @@
 
 							auto = setInterval(function() {
 								autoAdvance();
-								$el.find(opt.nextSlide).trigger('click');
+								$el.find(opt.nextSlide).triggerHandler('click');
 							}, speed);
 							
 							break;
