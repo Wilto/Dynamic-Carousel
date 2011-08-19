@@ -56,8 +56,8 @@
 						$slider
 							.attr( 'id', ( $slider[0].id || 'carousel-' + inst + '-' + carInt ) )
 							.css({
-								marginLeft: "0",
-								parseFloat: "left",
+								marginLeft: "0px",
+								"float": "left",
 								width: 100 * slidenum + "%",
 								"-webkit-transition": transition,
 								"-moz-transition": transition,
@@ -71,7 +71,7 @@
 
 						$slide
 							.css({
-								float: "left",
+								"float": "left",
 								width: (100 / slidenum) + "%"				
 							})
 							.each(function(i) {
