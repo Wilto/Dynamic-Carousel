@@ -325,46 +325,6 @@
 				}
 			});
 
-		$('[data-autorotate]').each(function() {
-			var $el = $(this),
-				speed = this.getAttribute('data-autorotate'),
-				auto,
-				autoAdvance = function() {
-					var slidenum = $el.find(opt.slide).length,
-						$slider = $el.find(opt.slider),
-						active = -($(opt.slider).getPercentage() / 100) + 1;
-					
-					switch( active ) {
-						case slidenum: 
-							clearInterval(auto);
-					
-							auto = setInterval(function() {
-								autoAdvance();
-								$slider.trigger("nextprev", { dir: 'prev' });	
-							}, speed);
-							
-							break;
-						case 1:
-							clearInterval(auto);
-
-							auto = setInterval(function() {
-								autoAdvance();								
-								$slider.trigger("nextprev", { dir: 'next' });	
-							}, speed);
-							
-							break;
-					}
-				};
-
-			auto = setInterval(autoAdvance, speed);
-			
-			$el
-				.attr('aria-live', 'polite')
-				.bind('mouseenter click touchstart', function() {
-					clearInterval(auto);
-				});
-		});
-
 		var setup = {
 			wrap : this,
 			slider : opt.slider
@@ -374,6 +334,47 @@
 				dir = ( ui.direction === "left" ) ? 'next' : 'prev';
 			
 			$slider.trigger("nextprev", { dir: dir });	
+		});
+
+
+		$slidewrap.filter('[data-autorotate]').each(function() {
+			var $el = $(this),
+				speed = this.getAttribute('data-autorotate'),
+				auto,
+				autoAdvance = function() {
+					var slidenum = $el.find(opt.slide).length,
+						$slider  = $el.find(opt.slider),
+						active   = -($(opt.slider).getPercentage() / 100) + 1;
+
+					switch( active ) {
+						case slidenum: 
+							clearInterval(auto);
+
+							auto = setInterval(function() {
+								autoAdvance();
+								$slider.trigger("nextprev", { dir: 'prev' });	
+							}, speed);
+
+							break;
+						case 1:
+							clearInterval(auto);
+
+							auto = setInterval(function() {
+								autoAdvance();								
+								$slider.trigger("nextprev", { dir: 'next' });	
+							}, speed);
+
+							break;
+					}
+				};
+
+			auto = setInterval(autoAdvance, speed);
+
+			$el
+				.attr('aria-live', 'polite')
+				.bind('mouseenter click touchstart', function() {
+					clearInterval(auto);
+				});
 		});
 
 		return this;
