@@ -56,8 +56,8 @@
 						$slider
 							.attr( 'id', ( $slider[0].id || 'carousel-' + inst + '-' + carInt ) )
 							.css({
-								marginLeft: "0px",
-								float: "left",
+								marginLeft: "0",
+								parseFloat: "left",
 								width: 100 * slidenum + "%",
 								"-webkit-transition": transition,
 								"-moz-transition": transition,
@@ -228,23 +228,22 @@
 			move : function(e, ui) {
 				var $el = $(this);
 
-				$el.trigger(opt.namespace + "-beforemove");
+				$el
+					.trigger(opt.namespace + "-beforemove")
+					.trigger("navstate", { current: ui.moveTo });
 				
 				if( transitionSupport ) {
-									
 					$el.css('marginLeft', ui.moveTo + "%");
 					
 					$el.one("transitionend webkitTransitionEnd OTransitionEnd", function() {
 						$(this).trigger( opt.namespace + "-aftermove" );
 					});
-					
 				} else {					
-					$el.animate({ marginLeft: ui.moveTo + "%" }, opt.speed, function() {
+					$el.animate({ marginLeft: ui.moveTo + "%" }, { duration : opt.speed, queue : false }, function() {
 						$el.trigger( opt.namespace + "-aftermove" );
 					});
 				}
 			
-				$el.trigger("navstate", { current: ui.moveTo });
 			},
 			nextPrev : function(e, ui) {
 				var $el = $(this),
@@ -332,6 +331,7 @@
 				auto,
 				autoAdvance = function() {
 					var slidenum = $el.find(opt.slide).length,
+						$slider = $el.find(opt.slider),
 						active = -($(opt.slider).getPercentage() / 100) + 1;
 					
 					switch( active ) {
@@ -340,7 +340,7 @@
 					
 							auto = setInterval(function() {
 								autoAdvance();
-								$el.find(opt.prevSlide).trigger('click');
+								$slider.trigger("nextprev", { dir: 'prev' });	
 							}, speed);
 							
 							break;
@@ -348,8 +348,8 @@
 							clearInterval(auto);
 
 							auto = setInterval(function() {
-								autoAdvance();
-								$el.find(opt.nextSlide).trigger('click');
+								autoAdvance();								
+								$slider.trigger("nextprev", { dir: 'next' });	
 							}, speed);
 							
 							break;
