@@ -9,9 +9,9 @@
 		return oPercent;
 	};
 	
-	$.fn.adjRounding = function() {
+	$.fn.adjRounding = function(slide) {
 		var $el = $(this),
-			$slides = $el.find( '.slide' ),
+			$slides = $el.find( slide ),
 			diff = $el.parent().width() - $($slides[0]).width();
 		
 		if (diff !== 0) { 
@@ -44,48 +44,48 @@
 			namespace		: 'carousel',
 			speed			: 300
 		},
-		opt = $.extend(defaults, config),
-		$slidewrap = this,
-		dStyle = document.body.style,
+		opt               = $.extend(defaults, config),
+		$slidewrap        = this,
+		dStyle            = document.body.style,
 		transitionSupport = dStyle.webkitTransition !== undefined || 
-							dStyle.mozTransition !== undefined ||
-							dStyle.msTransition !== undefined ||
-							dStyle.OTransition !== undefined ||
-							dStyle.transition !== undefined,
+							dStyle.mozTransition    !== undefined ||
+							dStyle.msTransition     !== undefined ||
+							dStyle.OTransition      !== undefined ||
+							dStyle.transition       !== undefined,
 		carousel = {
 			init : function() {
 				inst++;
 								
 				$slidewrap.each(function(carInt) {
-						var $wrap = $(this),
-							$slider = $wrap.find(opt.slider),
-							$slide = $wrap.find(opt.slide),			
-							slidenum = $slide.length,
+						var $wrap      = $(this),
+							$slider    = $wrap.find(opt.slider),
+							$slide     = $wrap.find(opt.slide),			
+							slidenum   = $slide.length,
 							transition = "margin-left " + ( opt.speed / 1000 ) + "s ease",
-							tmp = 'carousel-' + inst + '-' + carInt;
+							tmp        = 'carousel-' + inst + '-' + carInt;
 
 						$wrap
 							.css({
-								overflow: "hidden",
-								width: "100%"
+								overflow             : "hidden",
+								width                : "100%"
 							})
-							.attr('role', 'application');
+							.attr('role' , 'application');
 						
 						$slider
 							.attr( 'id', ( $slider[0].id || 'carousel-' + inst + '-' + carInt ) )
 							.css({
-								marginLeft: "0px",
-								"float": "left",
-								width: 100 * slidenum + "%",
-								"-webkit-transition": transition,
-								"-moz-transition": transition,
-								"-ms-transition": transition,
-								"-o-transition": transition,
-								"transition": transition
+								"marginLeft"         : "0px",
+								"float"              : "left",
+								"width"              : 100 * slidenum + "%",
+								"-webkit-transition" : transition,
+								"-moz-transition"    : transition,
+								"-ms-transition"     : transition,
+								"-o-transition"      : transition,
+								"transition"         : transition
 							})
-							.bind( 'carouselmove', carousel.move )
-							.bind( 'nextprev', carousel.nextPrev )
-							.bind( 'navstate', carousel.navState );
+							.bind( 'carouselmove' , carousel.move )
+							.bind( 'nextprev'     , carousel.nextPrev )
+							.bind( 'navstate'     , carousel.navState );
 
 						$slide
 							.css({
@@ -97,7 +97,7 @@
 
 								$el.attr({
 									role : "tabpanel document",
-									id : tmp + '-slide' + i
+									id   : tmp + '-slide' + i
 								});
 
 								if( opt.addPagination ) {
@@ -135,19 +135,20 @@
 			},
 			addPagination : function() {
 				$slidewrap.each(function(i) {
-					var $oEl = $(this),
-						$slider = $oEl.find(opt.slider),
+					var $oEl        = $(this),
 						$pagination = $('<ol class="' + opt.namespace + '-tabs" role="tablist navigation" />'),
-						slides = $oEl.find(opt.slide).length,
-						associated = 'carousel-' + inst + '-' + i;
+						$slider     = $oEl.find(opt.slider),
+						$slides     = $oEl.find(opt.slide)
+						slideNum    = $slides.length,
+						associated  = 'carousel-' + inst + '-' + i;
 						
-					while( slides-- ) {
-						var hed = $( $oEl.find( opt.slide )[ slides ] ).find( opt.slideHed ).text() || 'Page ' + ( slides + 1 ),
+					while( slideNum-- ) {
+						var hed = $( $slides[ slideNum ] ).find( opt.slideHed ).text() || 'Page ' + ( slideNum + 1 ),
 							tabMarkup = [
 								'<li role="presentation">',
-									'<a href="#' + associated + '-slide' + slides +'"',
-									' aria-controls="' + associated + '-slide' + slides +'"',
-									' id="' + associated + '-tab' + slides + '" role="tab">' + hed + '</a>',
+									'<a href="#' + associated + '-slide' + slideNum +'"',
+									' aria-controls="' + associated + '-slide' + slideNum +'"',
+									' id="' + associated + '-tab' + slideNum + '" role="tab">' + hed + '</a>',
 								'</li>'
 							].join('');
 						
@@ -157,7 +158,7 @@
 					$pagination
 						.appendTo( $oEl )
 						.find('li').keydown( function(e) {
-							var $el = $(this),
+							var $el      = $(this),
 								$prevTab = $el.prev().find('a'),
 								$nextTab = $el.next().find('a');
 
@@ -175,11 +176,15 @@
 							}
 						})
 						.find('a').click( function(e) {
-							var current = $(this).parent().index(),
-								move = -( 100 * ( current ) ),
-								$slider = $oEl.find( opt.slider );
+							var $el = $(this);
+							
+							if( $el.attr('aria-selected') == 'true' ) { 
+								var current = $el.parent().index(),
+									move    = -( 100 * ( current ) ),
+									$slider = $oEl.find( opt.slider );
 
-							$slider.trigger( 'carouselmove', { moveTo: move });
+								$slider.trigger( 'carouselmove', { moveTo: move });
+							}
 							e.preventDefault();
 						});
 				});
@@ -190,9 +195,9 @@
 				return Math.ceil( (val - (val % 100 ) ) / 100) * 100;
 			},
 			navState : function(e, ui) {
-				var $el = $(this),
-					$slides = $el.find(opt.slide),
-					ind = -(ui.current / 100),
+				var $el          = $(this),
+					$slides      = $el.find(opt.slide),
+					ind          = -(ui.current / 100),
 					$activeSlide = $($slides[ind]);
 								
 				$el.attr('aria-activedescendant', $activeSlide[0].id);
@@ -224,7 +229,7 @@
 				// Update state of pagination tabs:
 				if( !!opt.addPagination ) {
 					var tabId = $activeSlide.attr('aria-labelledby'),
-						$tab = $('#' + tabId );
+						$tab  = $('#' + tabId );
 					
 					$tab
 						.parent()
@@ -253,7 +258,7 @@
 				if( transitionSupport ) {
 					
 					$el
-						.adjRounding() /* Accounts for browser rounding errors. Lookin’ at you, iOS Safari. */
+						.adjRounding( opt.slide ) /* Accounts for browser rounding errors. Lookin’ at you, iOS Safari. */
 						.css('marginLeft', ui.moveTo + "%")
 						.one("transitionend webkitTransitionEnd OTransitionEnd", function() {
 							$(this).trigger( opt.namespace + "-aftermove" );
@@ -261,7 +266,7 @@
 						
 				} else {					
 					$el
-						.adjRounding()
+						.adjRounding( opt.slide )
 						.animate({ marginLeft: ui.moveTo + "%" }, { duration : opt.speed, queue : false }, function() {
 							$(this).trigger( opt.namespace + "-aftermove" );
 						});
