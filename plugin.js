@@ -4,7 +4,25 @@
 	var inst = 0;
 	
 	$.fn.getPercentage = function() {
-		return this.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1);
+		var oPercent = this.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1);
+		
+		return oPercent;
+	};
+	
+	$.fn.adjRounding = function() {
+		var $el = $(this),
+			$slides = $el.find( '.slide' ),
+			diff = $el.parent().width() - $($slides[0]).width();
+		
+		if (diff !== 0) { 
+			$($slides).css( "position", "relative" );
+			
+			for (var i = 0; i < $slides.length; i++) {
+				$($slides[i]).css( "left", (diff * i) + "px" );
+			}
+		}
+
+		return this;
 	};
 	
 	$.fn.carousel = function(config) {
@@ -227,7 +245,7 @@
 			},
 			move : function(e, ui) {
 				var $el = $(this);
-
+				
 				$el
 					.trigger(opt.namespace + "-beforemove")
 					.trigger("navstate", { current: ui.moveTo });
@@ -235,17 +253,19 @@
 				if( transitionSupport ) {
 					
 					$el
+						.adjRounding() /* Accounts for browser rounding errors. Lookin’ at you, iOS Safari. */
 						.css('marginLeft', ui.moveTo + "%")
 						.one("transitionend webkitTransitionEnd OTransitionEnd", function() {
 							$(this).trigger( opt.namespace + "-aftermove" );
 						});
 						
 				} else {					
-					$el.animate({ marginLeft: ui.moveTo + "%" }, { duration : opt.speed, queue : false }, function() {
-						$(this).trigger( opt.namespace + "-aftermove" );
-					});
+					$el
+						.adjRounding()
+						.animate({ marginLeft: ui.moveTo + "%" }, { duration : opt.speed, queue : false }, function() {
+							$(this).trigger( opt.namespace + "-aftermove" );
+						});
 				}
-			
 			},
 			nextPrev : function(e, ui) {				
 				var $el = $(this),
