@@ -64,6 +64,10 @@
 							transition = "margin-left " + ( opt.speed / 1000 ) + "s ease",
 							tmp        = 'carousel-' + inst + '-' + carInt;
 
+						if( $slide.length <= 1 ) {
+							return; /* No sense running all this code if the carousel functionality is unnecessary. */
+						}
+						
 						$wrap
 							.css({
 								overflow             : "hidden",
@@ -106,7 +110,7 @@
 							});
 	
 						// Build and insert navigation/pagination, if specified in the options:
-						opt.addPagination 	&& carousel.addPagination();
+						opt.addPagination   && carousel.addPagination();
 						opt.addNav 			&& carousel.addNav();
 						
 						$slider.trigger( "navstate", { current: 0 });
