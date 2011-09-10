@@ -215,14 +215,12 @@
 					var $target = $('[href*="#' + this.id + '"]');
 					
 					$target.removeClass( opt.namespace + '-disabled' );
-					
-					switch( ui.current ) {
-						case ( -($slides.length - 1) * 100 ):
-							$target.filter(opt.nextSlide).addClass( opt.namespace + '-disabled' );
-							break;
-						case 0:
-							$target.filter(opt.prevSlide).addClass( opt.namespace + '-disabled' );
-							break;
+
+					if( ind === 0 ) {
+						$target.filter(opt.nextSlide).addClass( opt.namespace + '-disabled' );
+					}
+					if( ind === $slides.length - 1 ) {
+						$target.filter(opt.prevSlide).addClass( opt.namespace + '-disabled' );
 					}
 				}
 								
