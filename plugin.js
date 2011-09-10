@@ -363,20 +363,15 @@
 		});
 
 
+		$slidewrap.find( opt.slide ).length > 1 &&
 		$slidewrap.filter('[data-autorotate]').each(function() {
 			var auto,
 				$el         = $(this),
 				speed       = $el.attr('data-autorotate'),
 				slidenum    = $el.find(opt.slide).length,
-				autoAdvance = ( slidenum > 1 ) && function() {
+				autoAdvance = function() {
 					var $slider  = $el.find(opt.slider),
 						active   = -( $(opt.slider).getPercentage() / 100 ) + 1;
-
-					alert( slideNum );
-					
-					if( slideNum <= 1 ) {
-						return;
-					}
 
 					switch( active ) {
 						case slidenum: 
