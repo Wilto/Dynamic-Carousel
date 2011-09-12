@@ -220,11 +220,10 @@
 					
 					$target.removeClass( opt.namespace + '-disabled' );
 
-					if( ind === 0 ) {
-						$target.filter(opt.nextSlide).addClass( opt.namespace + '-disabled' );
-					}
-					if( ind === $slides.length - 1 ) {
+					if( ind == 0 ) {
 						$target.filter(opt.prevSlide).addClass( opt.namespace + '-disabled' );
+					} else if( ind == $slides.length - 1 ) {
+						$target.filter(opt.nextSlide).addClass( opt.namespace + '-disabled' );
 					}
 				}
 								
@@ -363,7 +362,6 @@
 		});
 
 
-		$slidewrap.find( opt.slide ).length > 1 &&
 		$slidewrap.filter('[data-autorotate]').each(function() {
 			var auto,
 				$el         = $(this),
