@@ -418,11 +418,11 @@ $.event.special.dragSnap = {
 					transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
 
 				$el.css({
-					"-webkit-transition": transition,
-					"-moz-transition": transition,
-					"-ms-transition": transition,
-					"-o-transition": transition,
-					"transition": transition
+					"-webkit-transition" : transition,
+					"-moz-transition"    : transition,
+					"-ms-transition"     : transition,
+					"-o-transition"      : transition,
+					"transition"         : transition
 				});
 			},
 			roundDown = function(left) {
