@@ -44,8 +44,7 @@
             addPagination   : false,
             addNav          : ( config != undefined && ( config.prevSlide || config.nextSlide ) ) ? false : true,
             namespace       : 'carousel',
-            speed           : 300,
-            paginationTarget: null
+            speed           : 300
         },
         opt               = $.extend(defaults, config),
         $slidewrap        = this,
@@ -237,6 +236,9 @@
 
                 // Update state of pagination tabs:
                 if( !!opt.addPagination ) {
+
+
+
                     var tabId = $activeSlide.attr('aria-labelledby'),
                         $tab  = $('#' + tabId );
 
@@ -568,7 +570,7 @@ $.event.special.dragSnap = {
         this.data( "carousel-initialized", true );
 
         var defaults = {
-            slider			: '.slider',
+            slider    		: '.slider',
             slide			: '.slide',
             prevSlide		: null,
             nextSlide		: null,
@@ -695,13 +697,10 @@ $.event.special.dragSnap = {
                         $pagination.prepend(tabMarkup);
                     };
 
-                    if(opt.paginationTarget!=null){
-                        $pagination.appendTo( opt.paginationTarget );
-                    }else{
-                        $pagination.appendTo( $oEl );
-                    }
+                    //if target for pagination set, use it rather then appending to the main element
+                    var $paginationTarget = (opt.addPagination==true) ? $oEl : opt.addPagination;
 
-                    $pagination.find('li').keydown( function(e) {
+                    $pagination.appendTo($paginationTarget).find('li').keydown( function(e) {
                             var $el      = $(this),
                                 $prevTab = $el.prev().find('a'),
                                 $nextTab = $el.next().find('a');
