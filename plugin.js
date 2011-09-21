@@ -162,13 +162,10 @@
                     };
 
 
-                    if(opt.paginationTarget!=null){
-                        $pagination.appendTo( opt.paginationTarget );
-                    }else{
-                        $pagination.appendTo( $oEl );
-                    }
+                    //If addPagination is not true, assume it is a dom element and append nav to it
+                    var $paginationTarget = (opt.addPagination == true) ? $oEl : opt.addPagination;
 
-                    $pagination.find('li').keydown( function(e) {
+                    $pagination.appendTo($paginationTarget).find('li').keydown( function(e) {
                             var $el      = $(this),
                                 $prevTab = $el.prev().find('a'),
                                 $nextTab = $el.next().find('a');
