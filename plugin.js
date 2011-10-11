@@ -182,7 +182,7 @@
 						.find('a').click( function(e) {
 							var $el = $(this);
 							
-							if( $el.attr('aria-selected') == 'true' ) { 
+							if( $el.attr('aria-selected') == 'false' ) { 
 								var current = $el.parent().index(),
 									move    = -( 100 * ( current ) ),
 									$slider = $oEl.find( opt.slider );
