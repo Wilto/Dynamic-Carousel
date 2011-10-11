@@ -46,14 +46,15 @@
 		},
 		opt               = $.extend(defaults, config),
 		$slidewrap        = this,
-		dStyle            = document.body.style,
-		transitionSupport = dStyle.webkitTransition !== undefined || 
-							dStyle.mozTransition    !== undefined ||
-							dStyle.msTransition     !== undefined ||
-							dStyle.OTransition      !== undefined ||
-							dStyle.transition       !== undefined,
+		dBody            = (document.body || document.documentElement),
+		transitionSupport = function() {
+		    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
+			var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.msTransition || dBody.style.OTransition || dBody.style.MozTransition )
+			
+			return tSupport;
+		},
 		carousel = {
-			init : function() {
+			init : function() {				
 				inst++;
 								
 				$slidewrap.each(function(carInt) {
@@ -182,7 +183,7 @@
 						.find('a').click( function(e) {
 							var $el = $(this);
 							
-							if( $el.attr('aria-selected') == 'true' ) { 
+							if( $el.attr('aria-selected') == 'false' ) { 
 								var current = $el.parent().index(),
 									move    = -( 100 * ( current ) ),
 									$slider = $oEl.find( opt.slider );
@@ -251,13 +252,13 @@
 			},
 			move : function(e, ui) {
 				var $el = $(this);
-				
+
 				$el
 					.trigger(opt.namespace + "-beforemove")
 					.trigger("navstate", { current: ui.moveTo });
 				
-				if( transitionSupport ) {
-					
+				if( transitionSupport() ) {
+
 					$el
 						.adjRounding( opt.slide ) /* Accounts for browser rounding errors. Lookin’ at you, iOS Safari. */
 						.css('marginLeft', ui.moveTo + "%")
@@ -433,15 +434,16 @@ $.event.special.dragSnap = {
 					currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
 					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
 					dStyle = document.body.style,
-					transitionSupport = dStyle.webkitTransition !== undefined || 
-						dStyle.mozTransition !== undefined ||
-						dStyle.msTransition !== undefined ||
-						dStyle.oTransition !== undefined ||
-						dStyle.transition !== undefined;
+					transitionSupport = function() {
+					    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
+						var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
+
+						return tSupport;
+					};
 
 				transitionSwap($el, true);
 				
-				if( transitionSupport ) {
+				if( transitionSupport() ) {
 					$el.css('marginLeft', left + "%");
 				} else {
 					$el.animate({ marginLeft: left + "%" }, opt.speed);
