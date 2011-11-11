@@ -435,6 +435,7 @@ $.event.special.dragSnap = {
 					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
 					dStyle = document.body.style,
 					transitionSupport = function() {
+						var dBody = (document.body || document.documentElement);
 					    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
 						var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
 
