@@ -48,15 +48,26 @@
 		$slidewrap        = this,
 		dBody            = (document.body || document.documentElement),
 		transitionSupport = function() {
-		    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
-			var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.msTransition || dBody.style.OTransition || dBody.style.MozTransition )
+			// Original code from Modernizr : http://www.modernizr.com/
+		    var prop = 'transitionProperty',
+				modElem = document.createElement('tester'),
+				mStyle = modElem.style,
+				prefixes = ' -webkit- -moz- -o- -ms- -khtml- '.split(' '),
+				domPrefixes = 'Webkit Moz O ms Khtml'.split(' '),
+				ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
+				props   = (prop + ' ' + domPrefixes.join(ucProp + ' ') + ucProp).split(' ');
 			
-			return tSupport;
+			for ( var i in props ) {
+				if ( mStyle[ props[i] ] !== undefined ) {
+					return true;
+				}
+			}
+			return false;
 		},
 		carousel = {
 			init : function() {				
 				inst++;
-								
+				
 				$slidewrap.each(function(carInt) {
 						var $wrap      = $(this),
 							$slider    = $wrap.find(opt.slider),
@@ -435,10 +446,21 @@ $.event.special.dragSnap = {
 					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
 					dStyle = document.body.style,
 					transitionSupport = function() {
-					    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
-						var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
-
-						return tSupport;
+						// Original code from Modernizr : http://www.modernizr.com/
+					    var prop = 'transitionProperty',
+							modElem = document.createElement('tester'),
+							mStyle = modElem.style,
+							prefixes = ' -webkit- -moz- -o- -ms- -khtml- '.split(' '),
+							domPrefixes = 'Webkit Moz O ms Khtml'.split(' '),
+							ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
+							props   = (prop + ' ' + domPrefixes.join(ucProp + ' ') + ucProp).split(' ');
+						
+						for ( var i in props ) {
+							if ( mStyle[ props[i] ] !== undefined ) {
+								return true;
+							}
+						}
+						return false;
 					};
 
 				transitionSwap($el, true);
