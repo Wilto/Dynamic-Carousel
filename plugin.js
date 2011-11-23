@@ -4,7 +4,7 @@
 	var inst = 0;
 	
 	$.fn.getPercentage = function() {
-		var oPercent = this.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1);
+		var oPercent = this.attr('style').match(/margin\-left:(.*[0-9])/i) && parseInt(RegExp.$1, 10);
 		
 		return oPercent;
 	};
@@ -49,7 +49,7 @@
 		dBody            = (document.body || document.documentElement),
 		transitionSupport = function() {
 		    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
-			var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.msTransition || dBody.style.OTransition || dBody.style.MozTransition )
+			var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.msTransition || dBody.style.OTransition || dBody.style.MozTransition );
 			
 			return tSupport;
 		},
