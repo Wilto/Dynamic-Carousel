@@ -319,7 +319,7 @@
 		carousel.init(this);
 
 		$(opt.nextSlide + ',' + opt.prevSlide)
-			.bind('click', function(e) {				
+			.bind('click', function(e) {
 				var $el = $(this),
 					link = this.hash,
 					dir = ( $el.is(opt.prevSlide) ) ? 'prev' : 'next',
@@ -411,7 +411,7 @@
 
 			var $el = $(this),
 				transitionSwap = function($el, tog) {
-					var speed = .3,
+					var speed = 0.3,
 						transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
 
 					$el.css({
@@ -423,8 +423,7 @@
 					});
 				},
 				roundDown = function(left) {
-					var left = parseInt(left, 10);
-
+					left = parseInt(left, 10);
 					return Math.ceil( (left - (left % 100 ) ) / 100) * 100;
 				},
 				snapBack = function(e, ui) {
