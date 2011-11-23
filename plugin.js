@@ -143,7 +143,7 @@
 					var $oEl        = $(this),
 						$pagination = $('<ol class="' + opt.namespace + '-tabs" role="tablist navigation" />'),
 						$slider     = $oEl.find(opt.slider),
-						$slides     = $oEl.find(opt.slide)
+						$slides     = $oEl.find(opt.slide),
 						slideNum    = $slides.length,
 						associated  = 'carousel-' + inst + '-' + i;
 						
