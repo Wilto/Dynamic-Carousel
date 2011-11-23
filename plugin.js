@@ -433,7 +433,7 @@
 						dStyle = document.body.style,
 						transitionSupport = function() {
 						    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
-							var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
+							var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition );
 
 							return tSupport;
 						};
