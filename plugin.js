@@ -405,124 +405,123 @@
 
 		return this;
 	};
-})(jQuery);
+	
+	$.event.special.dragSnap = {
+		setup: function(setup) {
 
+			var $el = $(this),
+				transitionSwap = function($el, tog) {
+					var speed = .3,
+						transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
 
-$.event.special.dragSnap = {
-	setup: function(setup) {
+					$el.css({
+						"-webkit-transition" : transition,
+						"-moz-transition"    : transition,
+						"-ms-transition"     : transition,
+						"-o-transition"      : transition,
+						"transition"         : transition
+					});
+				},
+				roundDown = function(left) {
+					var left = parseInt(left, 10);
 
-		var $el = $(this),
-			transitionSwap = function($el, tog) {
-				var speed = .3,
-					transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
+					return Math.ceil( (left - (left % 100 ) ) / 100) * 100;
+				},
+				snapBack = function(e, ui) {
+					var $el = ui.target,
+						currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
+						left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
+						dStyle = document.body.style,
+						transitionSupport = function() {
+						    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
+							var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
 
-				$el.css({
-					"-webkit-transition" : transition,
-					"-moz-transition"    : transition,
-					"-ms-transition"     : transition,
-					"-o-transition"      : transition,
-					"transition"         : transition
-				});
-			},
-			roundDown = function(left) {
-				var left = parseInt(left, 10);
-				
-				return Math.ceil( (left - (left % 100 ) ) / 100) * 100;
-			},
-			snapBack = function(e, ui) {
-				var $el = ui.target,
-					currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
-					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
-					dStyle = document.body.style,
-					transitionSupport = function() {
-					    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
-						var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
+							return tSupport;
+						};
 
-						return tSupport;
-					};
+					transitionSwap($el, true);
 
-				transitionSwap($el, true);
-				
-				if( transitionSupport() ) {
-					$el.css('marginLeft', left + "%");
-				} else {
-					$el.animate({ marginLeft: left + "%" }, opt.speed);
-				}
-			};
-
-		$el
-			.bind("snapback", snapBack)
-			.bind("touchstart", function(e) {
-				var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
-					start = {
-						time: (new Date).getTime(),
-						coords: [ data.pageX, data.pageY ],
-						origin: $(e.target).closest( setup.wrap )
-					},
-					stop,
-					$tEl = $(e.target).closest( setup.slider ),
-					currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.getPercentage() : 0;
-				
-				transitionSwap($tEl, false);
-
-				function moveHandler(e) {
-					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
-					stop = {
-							time: (new Date).getTime(),
-							coords: [ data.pageX, data.pageY ]
-					};
-					
-					if(!start || Math.abs(start.coords[0] - stop.coords[0]) < Math.abs(start.coords[1] - stop.coords[1]) ) {
-						return;
+					if( transitionSupport() ) {
+						$el.css('marginLeft', left + "%");
+					} else {
+						$el.animate({ marginLeft: left + "%" }, opt.speed);
 					}
-
-					$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });						
-
-					// prevent scrolling
-					if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
-						e.preventDefault();
-					}
-					
 				};
 
-				$el
-					.bind("gesturestart", function(e) {
-						$el
-							.unbind("touchmove", moveHandler)
-							.unbind("touchend", moveHandler);
-					})
-					.bind("touchmove", moveHandler)
-					.one("touchend", function(e) {
+			$el
+				.bind("snapback", snapBack)
+				.bind("touchstart", function(e) {
+					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
+						start = {
+							time: (new Date).getTime(),
+							coords: [ data.pageX, data.pageY ],
+							origin: $(e.target).closest( setup.wrap )
+						},
+						stop,
+						$tEl = $(e.target).closest( setup.slider ),
+						currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.getPercentage() : 0;
 
-						$el.unbind("touchmove", moveHandler);
-						
-						transitionSwap($tEl, true);
-						
-						if (start && stop ) {
+					transitionSwap($tEl, false);
 
-							if (Math.abs(start.coords[0] - stop.coords[0]) > 10
-								&& Math.abs(start.coords[0] - stop.coords[0]) > Math.abs(start.coords[1] - stop.coords[1])) {
-								e.preventDefault();
-							} else {
-								$el.trigger('snapback', { target: $tEl, left: true });
-								return;
-							}
+					function moveHandler(e) {
+						var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
+						stop = {
+								time: (new Date).getTime(),
+								coords: [ data.pageX, data.pageY ]
+						};
 
-							if (Math.abs(start.coords[0] - stop.coords[0]) > 1 && Math.abs(start.coords[1] - stop.coords[1]) < 75) {
-								var left = start.coords[0] > stop.coords[0];
+						if(!start || Math.abs(start.coords[0] - stop.coords[0]) < Math.abs(start.coords[1] - stop.coords[1]) ) {
+							return;
+						}
 
-							if( -( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) || ( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) ) {
+						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });						
 
-								start.origin.trigger("dragSnap", {direction: left ? "left" : "right"});
+						// prevent scrolling
+						if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+							e.preventDefault();
+						}
 
-								} else {								
-									$el.trigger('snapback', { target: $tEl, left: left });
+					};
+
+					$el
+						.bind("gesturestart", function(e) {
+							$el
+								.unbind("touchmove", moveHandler)
+								.unbind("touchend", moveHandler);
+						})
+						.bind("touchmove", moveHandler)
+						.one("touchend", function(e) {
+
+							$el.unbind("touchmove", moveHandler);
+
+							transitionSwap($tEl, true);
+
+							if (start && stop ) {
+
+								if (Math.abs(start.coords[0] - stop.coords[0]) > 10
+									&& Math.abs(start.coords[0] - stop.coords[0]) > Math.abs(start.coords[1] - stop.coords[1])) {
+									e.preventDefault();
+								} else {
+									$el.trigger('snapback', { target: $tEl, left: true });
+									return;
 								}
 
+								if (Math.abs(start.coords[0] - stop.coords[0]) > 1 && Math.abs(start.coords[1] - stop.coords[1]) < 75) {
+									var left = start.coords[0] > stop.coords[0];
+
+								if( -( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) || ( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) ) {
+
+									start.origin.trigger("dragSnap", {direction: left ? "left" : "right"});
+
+									} else {								
+										$el.trigger('snapback', { target: $tEl, left: left });
+									}
+
+								}
 							}
-						}
-						start = stop = undefined;
-					});
-			});
-	}
-};
+							start = stop = undefined;
+						});
+				});
+		}
+	};
+})(jQuery);
