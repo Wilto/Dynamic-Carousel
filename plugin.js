@@ -34,35 +34,39 @@
 		this.data( "carousel-initialized", true );
 
 		var defaults = {
-			slider			: '.slider',
-			slide			: '.slide',
-			prevSlide		: null,
-			nextSlide		: null,
-			slideHed		: null,
-			addPagination	: false,
-			addNav			: ( config != undefined && ( config.prevSlide || config.nextSlide ) ) ? false : true,
-			namespace		: 'carousel',
-			speed			: 300
+			slider				: '.slider',
+			slide				: '.slide',
+			prevSlide			: null,
+			nextSlide			: null,
+			slideHed			: null,
+			addPagination		: false,
+			addNav				: ( config != undefined && ( config.prevSlide || config.nextSlide ) ) ? false : true,
+			namespace			: 'carousel',
+			speed				: 300,
+			transitionSupport	: undefined
 		},
 		opt               = $.extend(defaults, config),
 		$slidewrap        = this,
 		dBody            = (document.body || document.documentElement),
 		transitionSupport = function() {
+			
+			if(opt.transitionSupport !== undefined) {return opt.transitionSupport} // return if we already have the answer
+			
 			// Original code from Modernizr : http://www.modernizr.com/
-		    var prop = 'transitionProperty',
-				modElem = document.createElement('tester'),
-				mStyle = modElem.style,
-				prefixes = ' -webkit- -moz- -o- -ms- -khtml- '.split(' '),
-				domPrefixes = 'Webkit Moz O ms Khtml'.split(' '),
-				ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
-				props   = (prop + ' ' + domPrefixes.join(ucProp + ' ') + ucProp).split(' ');
+			var prop		= 'transitionProperty',
+				modElem		= document.createElement('tester'),
+				mStyle		= modElem.style,
+				prefixes	= ' -webkit- -moz- -o- -ms- -khtml- '.split(' '),
+				domPrefixes	= 'Webkit Moz O ms Khtml'.split(' '),
+				ucProp		= prop.charAt(0).toUpperCase() + prop.substr(1),
+				props	  	= (prop + ' ' + domPrefixes.join(ucProp + ' ') + ucProp).split(' ');
 			
 			for ( var i in props ) {
 				if ( mStyle[ props[i] ] !== undefined ) {
-					return true;
+					return opt.transitionSupport = true;
 				}
 			}
-			return false;
+			return opt.transitionSupport = false;
 		},
 		carousel = {
 			init : function() {				
@@ -423,6 +427,29 @@ $.event.special.dragSnap = {
 	setup: function(setup) {
 
 		var $el = $(this),
+			opt = {
+				transitionSupport: undefined
+				},
+			transitionSupport = function() {
+				
+				if(opt.transitionSupport !== undefined) {return opt.transitionSupport} // return if we already have the answer
+				
+				// Original code from Modernizr : http://www.modernizr.com/
+				var prop		= 'transitionProperty',
+					modElem		= document.createElement('tester'),
+					mStyle		= modElem.style,
+					prefixes	= ' -webkit- -moz- -o- -ms- -khtml- '.split(' '),
+					domPrefixes	= 'Webkit Moz O ms Khtml'.split(' '),
+					ucProp		= prop.charAt(0).toUpperCase() + prop.substr(1),
+					props	  	= (prop + ' ' + domPrefixes.join(ucProp + ' ') + ucProp).split(' ');
+				
+				for ( var i in props ) {
+					if ( mStyle[ props[i] ] !== undefined ) {
+						return opt.transitionSupport = true;
+					}
+				}
+				return opt.transitionSupport = false;
+			},
 			transitionSwap = function($el, tog) {
 				var speed = .3,
 					transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
@@ -444,24 +471,7 @@ $.event.special.dragSnap = {
 				var $el = ui.target,
 					currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
 					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
-					dStyle = document.body.style,
-					transitionSupport = function() {
-						// Original code from Modernizr : http://www.modernizr.com/
-					    var prop = 'transitionProperty',
-							modElem = document.createElement('tester'),
-							mStyle = modElem.style,
-							prefixes = ' -webkit- -moz- -o- -ms- -khtml- '.split(' '),
-							domPrefixes = 'Webkit Moz O ms Khtml'.split(' '),
-							ucProp  = prop.charAt(0).toUpperCase() + prop.substr(1),
-							props   = (prop + ' ' + domPrefixes.join(ucProp + ' ') + ucProp).split(' ');
-						
-						for ( var i in props ) {
-							if ( mStyle[ props[i] ] !== undefined ) {
-								return true;
-							}
-						}
-						return false;
-					};
+					dStyle = document.body.style;
 
 				transitionSwap($el, true);
 				
