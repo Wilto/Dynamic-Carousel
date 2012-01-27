@@ -367,31 +367,22 @@
 			var auto,
 				$el         = $(this),
 				speed       = $el.attr('data-autorotate'),
-				slidenum    = $el.find(opt.slide).length,
+        $slider     = $el.find(opt.slider),
+        slidenum    = $el.find(opt.slide).length,
+        forward     = true,
 				autoAdvance = function() {
-					var $slider  = $el.find(opt.slider),
-						active   = -( $(opt.slider).getPercentage() / 100 ) + 1;
+					var active   = -( $slider.getPercentage() / 100 ) + 1;
 
-					switch( active ) {
-						case slidenum: 
-							clearInterval(auto);
+          switch ( active ) {
+              case slidenum:
+                  forward = false;
+                  break;
+              case 1:
+                  forward = true;
+                  break;
+          }
 
-							auto = setInterval(function() {
-								autoAdvance();
-								$slider.trigger("nextprev", { dir: 'prev' });	
-							}, speed);
-
-							break;
-						case 1:
-							clearInterval(auto);
-
-							auto = setInterval(function() {
-								autoAdvance();								
-								$slider.trigger("nextprev", { dir: 'next' });	
-							}, speed);
-
-							break;
-					}
+          $slider.trigger("nextprev", { dir: (forward) ? 'next' : 'prev' });
 				};
 
 			auto = setInterval(autoAdvance, speed);
