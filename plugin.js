@@ -26,12 +26,15 @@
 	};
 	
 	$.fn.carousel = function(config) {
+		$(this).each(function() {
 		
 		// Prevent re-init:
-		if( this.data( "carousel-initialized" ) ) { return; }
+		if( $(this).data( "carousel-init" ) ) { 
+			return;
+		}
 		
 		// Carousel is being initialized:
-		this.data( "carousel-initialized", true );
+		$(this).data( "carousel-init", true );
 
 		var defaults = {
 			slider			: '.slider',
@@ -46,7 +49,7 @@
 			controls		: null
 		},
 		opt               = $.extend(defaults, config),
-		$slidewrap        = this,
+		$slidewrap        = $(this),
 		dBody            = (document.body || document.documentElement),
 		transitionSupport = function() {
 		    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
@@ -417,6 +420,10 @@
 		});
 
 		return this;
+		
+	
+	});
+	
 	};
 })(jQuery);
 
