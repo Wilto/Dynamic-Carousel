@@ -42,7 +42,8 @@
 			addPagination	: false,
 			addNav			: ( config != undefined && ( config.prevSlide || config.nextSlide ) ) ? false : true,
 			namespace		: 'carousel',
-			speed			: 300
+			speed			: 300,
+			controls		: null
 		},
 		opt               = $.extend(defaults, config),
 		$slidewrap        = this,
@@ -102,7 +103,7 @@
 
 								$el.attr({
 									role : "tabpanel document",
-									id   : tmp + '-slide' + i
+									id   : ( $el[0].id || tmp + '-slide' + i )
 								});
 
 								if( opt.addPagination ) {
@@ -113,6 +114,18 @@
 						// Build and insert navigation/pagination, if specified in the options:
 						opt.addPagination   && carousel.addPagination();
 						opt.addNav 			&& carousel.addNav();
+						
+						if( opt.controls ) {
+							$(opt.controls).click( function(e) {
+								var $el = $(this),
+									$slider = $( $el.attr("href") ).closest( opt.slider ),
+									current = $el.index(),
+									move    = -( 100 * ( current ) );
+
+								$slider.trigger( 'carouselmove', { moveTo: move });
+									e.preventDefault();
+							});
+						}
 						
 						$slider.trigger( "navstate", { current: 0 });
 				});

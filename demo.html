@@ -60,27 +60,36 @@
 			<li><a href="#sliderName" class="prev">Prev</a></li>
 		</ul>
 		<ul class="slider" id="sliderName">
-			<li class="slide">	
+			<li class="slide" id="test1">	
 				<h2 class="slidehed">First Slide</h2>
 				<p>In hac habitasse platea dictumst. Nam pulvinar, odio sed rhoncus suscipit, sem diam ultrices mauris, eu consequat purus metus eu velit. Proin metus odio, aliquam eget molestie nec, gravida ut sapien. Phasellus quis est sed turpis sollicitudin venenatis sed eu odio. Praesent eget neque eu eros interdum malesuada non vel leo. Sed fringilla porta ligula egestas tincidunt. Nullam risus magna, ornare vitae varius eget, scelerisque a libero.</p>
 			</li>
-			<li class="slide">	
+			<li class="slide" id="test2">	
 				<h2 class="slidehed"><a href="#">Second Slide</a></h2>
 				<p>In hac habitasse platea dictumst. Nam pulvinar, odio sed rhoncus suscipit, sem diam ultrices mauris, eu consequat purus metus eu velit. Proin metus odio, aliquam eget molestie nec, gravida ut sapien.</p>
 			</li>
-			<li class="slide">	
+			<li class="slide" id="test3">	
 				<h2 class="slidehed">Third Slide</h2>
 				<p>Phasellus quis est sed turpis sollicitudin venenatis sed eu odio. Praesent eget neque eu eros interdum malesuada non vel leo. Sed fringilla porta ligula egestas tincidunt. Nullam risus magna, ornare vitae varius eget.</p>
 			</li>
-			<li class="slide">	
+			<li class="slide" id="test4">	
 				<h2 class="slidehed"><a href="#">Fourth Slide</a></h2>
 				<p>In hac habitasse platea dictumst. Nam pulvinar, odio sed rhoncus suscipit, sem diam ultrices mauris, eu consequat purus metus eu velit. Proin metus odio, aliquam eget molestie nec, gravida ut sapien. Phasellus quis est sed turpis sollicitudin venenatis sed eu odio.</p>
 			</li>
-			<li class="slide">	
+			<li class="slide" id="test5">	
 				<h2 class="slidehed">Fif' Slide</h2>
 				<p>In hac habitasse platea dictumst. Nam pulvinar, odio sed rhoncus suscipit, sem diam ultrices mauris, eu consequat purus metus eu velit. Proin metus odio, aliquam eget molestie nec, gravida ut sapien.</p>
 			</li>
 		</ul>
+
+	</div>
+		
+	<div class="controls">
+	<a href="#test1">test1</a>
+	<a href="#test2">test2</a>
+	<a href="#test3">test3</a>		
+	<a href="#test4">test4</a>
+	<a href="#test5">test5</a>
 	</div>
 	
 	<div class="slidewrap2">
@@ -145,8 +154,9 @@
 				slideHed: '.slidehed',
 				nextSlide : '.next',
 				prevSlide : '.prev',
-				addPagination: true,
-				addNav : false
+				addPagination: false,
+				addNav : false,
+				controls : ".controls a"
 			});
 			
 			$('.slidewrap2').carousel({
