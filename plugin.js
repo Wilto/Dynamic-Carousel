@@ -478,6 +478,11 @@ $.event.special.dragSnap = {
 
 					$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });						
 
+					// Snap back instead of freezing if a horizontal swipe turns into a vertical swipe.
+					if (Math.abs(start.coords[1] - stop.coords[1]) > 20) {
+						$el.trigger('snapback', { target: $tEl, left: true });
+					}
+
 					// prevent scrolling
 					if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
 						e.preventDefault();
