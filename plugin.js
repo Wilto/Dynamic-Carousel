@@ -455,7 +455,6 @@ $.event.special.dragSnap = {
 			.bind("touchstart", function(e) {
 				var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
 					start = {
-						time: (new Date).getTime(),
 						coords: [ data.pageX, data.pageY ],
 						origin: $(e.target).closest( setup.wrap )
 					},
@@ -467,22 +466,22 @@ $.event.special.dragSnap = {
 
 				function moveHandler(e) {
 					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
-					stop = {
-							time: (new Date).getTime(),
+						stop = {
 							coords: [ data.pageX, data.pageY ]
-					};
+						},
+						deltaX = Math.abs(start.coords[0] - stop.coords[0]),
+						deltaY = Math.abs(start.coords[1] - stop.coords[1]);
 
-					if(!start || Math.abs(start.coords[0] - stop.coords[0]) < Math.abs(start.coords[1] - stop.coords[1]) ) {
+					if( !start || deltaX < deltaY ) {
 						return;
 					}
 
 					$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
 
 					// prevent scrolling
-					if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
+					if ( deltaX > 10 ) {
 						e.preventDefault();
 					}
-					
 				};
 
 				$el
@@ -497,25 +496,26 @@ $.event.special.dragSnap = {
 
 						transitionSwap($tEl, true);
 
-						if (start && stop ) {
-							if (Math.abs(start.coords[0] - stop.coords[0]) > 10
-								&& Math.abs(start.coords[1] - stop.coords[1]) < 10
-								&& Math.abs(start.coords[0] - stop.coords[0]) > Math.abs(start.coords[1] - stop.coords[1])) {
+					if (start && stop ) {
+					    var deltaX = Math.abs(start.coords[0] - stop.coords[0]),
+							deltaY = Math.abs(start.coords[1] - stop.coords[1]),
+							left = start.coords[0] > stop.coords[0],
+							jumppoint;
+
+							if( deltaX > 20 && ( deltaX > deltaY ) ) {
 								e.preventDefault();
 							} else {
-								$el.trigger('snapback', { target: $tEl, left: true });
+								$el.trigger('snapback', { target: $tEl, left: left });
 								return;
 							}
 
-							if (Math.abs(start.coords[0] - stop.coords[0]) > 1 && Math.abs(start.coords[1] - stop.coords[1]) < 75) {
-								var left = start.coords[0] > stop.coords[0];
+							jumppoint = start.origin.width() / 4;
 
-							if( -( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) || ( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) ) {
+							if( -deltaX > jumppoint || deltaX > jumppoint ) {
 								start.origin.trigger("dragSnap", {direction: left ? "left" : "right"});
 							} else {
 								$el.trigger('snapback', { target: $tEl, left: left });
 							}
-						}
 					}
 					start = stop = undefined;
 				});
