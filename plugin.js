@@ -493,13 +493,11 @@ $.event.special.dragSnap = {
 					})
 					.bind("touchmove", moveHandler)
 					.one("touchend", function(e) {
-
 						$el.unbind("touchmove", moveHandler);
-						
-						transitionSwap($tEl, true);
-						
-						if (start && stop ) {
 
+						transitionSwap($tEl, true);
+
+						if (start && stop ) {
 							if (Math.abs(start.coords[0] - stop.coords[0]) > 10
 								&& Math.abs(start.coords[1] - stop.coords[1]) < 10
 								&& Math.abs(start.coords[0] - stop.coords[0]) > Math.abs(start.coords[1] - stop.coords[1])) {
@@ -513,16 +511,14 @@ $.event.special.dragSnap = {
 								var left = start.coords[0] > stop.coords[0];
 
 							if( -( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) || ( stop.coords[0] - start.coords[0]) > ( start.origin.width() / 4 ) ) {
-
 								start.origin.trigger("dragSnap", {direction: left ? "left" : "right"});
-
-								} else {
-									$el.trigger('snapback', { target: $tEl, left: left });
-								}
+							} else {
+								$el.trigger('snapback', { target: $tEl, left: left });
 							}
 						}
-						start = stop = undefined;
-					});
-			});
+					}
+					start = stop = undefined;
+				});
+		});
 	}
 };
