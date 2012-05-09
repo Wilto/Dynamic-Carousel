@@ -469,8 +469,8 @@ $.event.special.dragSnap = {
 						stop = {
 							coords: [ data.pageX, data.pageY ]
 						},
-						deltaX = Math.abs(start.coords[0] - stop.coords[0]),
-						deltaY = Math.abs(start.coords[1] - stop.coords[1]);
+						deltaX = Math.abs( start.coords[0] - data.pageX ),
+						deltaY = Math.abs( start.coords[1] - data.pageY );
 
 					if( !start || deltaX < deltaY ) {
 						return;
