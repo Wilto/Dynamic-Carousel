@@ -433,7 +433,7 @@ $.event.special.dragSnap = {
 				var $el = ui.target,
 					currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
 					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
-					dStyle = document.body.style,
+					dBody = document.body,
 					transitionSupport = function() {
 					    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
 						var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
@@ -442,7 +442,7 @@ $.event.special.dragSnap = {
 					};
 
 				transitionSwap($el, true);
-				
+
 				if( transitionSupport() ) {
 					$el.css('marginLeft', left + "%");
 				} else {
@@ -471,17 +471,12 @@ $.event.special.dragSnap = {
 							time: (new Date).getTime(),
 							coords: [ data.pageX, data.pageY ]
 					};
-					
+
 					if(!start || Math.abs(start.coords[0] - stop.coords[0]) < Math.abs(start.coords[1] - stop.coords[1]) ) {
 						return;
 					}
 
-					$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });						
-
-					// Snap back instead of freezing if a horizontal swipe turns into a vertical swipe.
-					if (Math.abs(start.coords[1] - stop.coords[1]) > 20) {
-						$el.trigger('snapback', { target: $tEl, left: true });
-					}
+					$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
 
 					// prevent scrolling
 					if (Math.abs(start.coords[0] - stop.coords[0]) > 10) {
@@ -506,6 +501,7 @@ $.event.special.dragSnap = {
 						if (start && stop ) {
 
 							if (Math.abs(start.coords[0] - stop.coords[0]) > 10
+								&& Math.abs(start.coords[1] - stop.coords[1]) < 10
 								&& Math.abs(start.coords[0] - stop.coords[0]) > Math.abs(start.coords[1] - stop.coords[1])) {
 								e.preventDefault();
 							} else {
@@ -520,10 +516,9 @@ $.event.special.dragSnap = {
 
 								start.origin.trigger("dragSnap", {direction: left ? "left" : "right"});
 
-								} else {								
+								} else {
 									$el.trigger('snapback', { target: $tEl, left: left });
 								}
-
 							}
 						}
 						start = stop = undefined;
