@@ -455,8 +455,10 @@ $.event.special.dragSnap = {
 			.bind("touchstart", function(e) {
 				var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
 					start = {
+						time: ( (new Date).getTime() ),
 						coords: [ data.pageX, data.pageY ],
-						origin: $(e.target).closest( setup.wrap )
+						origin: $(e.target).closest( setup.wrap ),
+						interacting: false
 					},
 					stop,
 					$tEl = $(e.target).closest( setup.slider ),
@@ -467,20 +469,23 @@ $.event.special.dragSnap = {
 				function moveHandler(e) {
 					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
 						stop = {
+							time: (new Date()).getTime(),
 							coords: [ data.pageX, data.pageY ]
 						},
 						deltaX = Math.abs( start.coords[0] - data.pageX ),
 						deltaY = Math.abs( start.coords[1] - data.pageY );
 
-					if( !start || deltaX < deltaY ) {
+					if( !start || deltaX < deltaY || deltaX < 15 ) {
 						return;
 					}
 
-					$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
-
 					// prevent scrolling
-					if ( deltaX > 10 ) {
+					if ( deltaX >= 15 ) {
+						start.interacting = true;
+						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
 						e.preventDefault();
+					} else {
+						return;
 					}
 				};
 
@@ -505,7 +510,9 @@ $.event.special.dragSnap = {
 							if( deltaX > 20 && ( deltaX > deltaY ) ) {
 								e.preventDefault();
 							} else {
-								$el.trigger('snapback', { target: $tEl, left: left });
+								if( start.interacting ) {
+									$el.trigger('snapback', { target: $tEl, left: left });
+								}
 								return;
 							}
 
