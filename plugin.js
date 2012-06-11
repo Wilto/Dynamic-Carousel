@@ -124,8 +124,8 @@
 						currentSlider = $slider[0].id,
 						navMarkup = [
 							'<ul class="slidecontrols" role="navigation">',
-							'	<li role="presentation"><a href="#' + currentSlider + '" class="' + opt.namespace + '-next">Next</a></li>',
-							'	<li role="presentation"><a href="#' + currentSlider + '" class="' + opt.namespace + '-prev">Prev</a></li>',
+							'  <li role="presentation"><a href="#' + currentSlider + '" class="' + opt.namespace + '-next">Next</a></li>',
+							'  <li role="presentation"><a href="#' + currentSlider + '" class="' + opt.namespace + '-prev">Prev</a></li>',
 							'</ul>'
 							].join(''),
 						nextprev = {
