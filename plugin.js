@@ -475,12 +475,12 @@ $.event.special.dragSnap = {
 						deltaX = Math.abs( start.coords[0] - data.pageX ),
 						deltaY = Math.abs( start.coords[1] - data.pageY );
 
-					if( !start || deltaX < deltaY || deltaX < 15 ) {
+					if( !start || deltaX < deltaY || deltaX < 55 ) {
 						return;
 					}
 
 					// prevent scrolling
-					if ( deltaX >= 15 ) {
+					if ( deltaX >= 55 ) {
 						start.interacting = true;
 						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
 						e.preventDefault();
