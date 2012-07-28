@@ -405,8 +405,6 @@
 
 		return this;
 	};
-})(jQuery);
-
 
 $.event.special.dragSnap = {
 	setup: function(setup) {
@@ -530,3 +528,4 @@ $.event.special.dragSnap = {
 		});
 	}
 };
+})(jQuery);
