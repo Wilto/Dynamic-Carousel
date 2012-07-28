@@ -1,6 +1,6 @@
 /*! (c) Mat Marquis (@wilto). MIT License. http://wil.to/3a */
-
 (function( $, undefined ) {
+
 	var inst = 0;
 
 	$.fn.getPercentage = function() {
@@ -406,126 +406,127 @@
 		return this;
 	};
 
-$.event.special.dragSnap = {
-	setup: function(setup) {
+	$.event.special.dragSnap = {
+		setup: function(setup) {
 
-		var $el = $(this),
-			transitionSwap = function($el, tog) {
-				var speed = .3,
-					transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
+			var $el = $(this),
+				transitionSwap = function($el, tog) {
+					var speed = .3,
+						transition = ( tog ) ? "margin-left " + speed + "s ease" : 'none';
 
-				$el.css({
-					"-webkit-transition" : transition,
-					"-moz-transition"    : transition,
-					"-ms-transition"     : transition,
-					"-o-transition"      : transition,
-					"transition"         : transition
-				});
-			},
-			roundDown = function(left) {
-				var left = parseInt(left, 10);
+					$el.css({
+						"-webkit-transition" : transition,
+						"-moz-transition"    : transition,
+						"-ms-transition"     : transition,
+						"-o-transition"      : transition,
+						"transition"         : transition
+					});
+				},
+				roundDown = function(left) {
+					var left = parseInt(left, 10);
 
-				return Math.ceil( (left - (left % 100 ) ) / 100) * 100;
-			},
-			snapBack = function(e, ui) {
-				var $el = ui.target,
-					currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
-					left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
-					dBody = document.body,
-					transitionSupport = function() {
-					    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
-						var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
+					return Math.ceil( (left - (left % 100 ) ) / 100) * 100;
+				},
+				snapBack = function(e, ui) {
+					var $el = ui.target,
+						currentPos = ( $el.attr('style') != undefined ) ? $el.getPercentage() : 0,
+						left = (ui.left === false) ? roundDown(currentPos) - 100 : roundDown(currentPos),
+						dBody = document.body,
+						transitionSupport = function() {
+						    dBody.setAttribute('style', 'transition:top 1s ease;-webkit-transition:top 1s ease;-moz-transition:top 1s ease;');
+							var tSupport = !!(dBody.style.transition || dBody.style.webkitTransition || dBody.style.MozTransition )
 
-						return tSupport;
-					};
+							return tSupport;
+						};
 
-				transitionSwap($el, true);
+					transitionSwap($el, true);
 
-				if( transitionSupport() ) {
-					$el.css('marginLeft', left + "%");
-				} else {
-					$el.animate({ marginLeft: left + "%" }, opt.speed);
-				}
-			};
-
-		$el
-			.bind("snapback", snapBack)
-			.bind("touchstart", function(e) {
-				var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
-					$target = $(e.target),
-					start = {
-						'time': +new Date,
-						'coords': [ data.pageX, data.pageY ],
-						'origin': $target.closest( setup.wrap ),
-						'interacting': false
-					},
-					stop,
-					$tEl = $target.closest( setup.slider ),
-					currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.getPercentage() : 0;
-
-				transitionSwap($tEl, false);
-
-				function moveHandler(e) {
-					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
-						stop = {
-							'time': +new Date,
-							'coords': [ data.pageX, data.pageY ]
-						},
-						deltaX = Math.abs( start.coords[0] - data.pageX ),
-						deltaY = Math.abs( start.coords[1] - data.pageY );
-
-					if( !start || deltaX < deltaY || deltaX < 55 ) {
-						return;
-					}
-
-					// prevent scrolling
-					if ( deltaX >= 55 ) {
-						start.interacting = true;
-						$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
-						e.preventDefault();
+					if( transitionSupport() ) {
+						$el.css('marginLeft', left + "%");
 					} else {
-						return;
+						$el.animate({ marginLeft: left + "%" }, opt.speed);
 					}
 				};
 
-				$el
-					.bind("gesturestart", function(e) {
-						$el
-							.unbind("touchmove", moveHandler)
-							.unbind("touchend", moveHandler);
-					})
-					.bind("touchmove", moveHandler)
-					.one("touchend", function(e) {
-						$el.unbind("touchmove", moveHandler);
+			$el
+				.bind("snapback", snapBack)
+				.bind("touchstart", function(e) {
+					var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e,
+						$target = $(e.target),
+						start = {
+							'time': +new Date,
+							'coords': [ data.pageX, data.pageY ],
+							'origin': $target.closest( setup.wrap ),
+							'interacting': false
+						},
+						stop,
+						$tEl = $target.closest( setup.slider ),
+						currentPos = ( $tEl.attr('style') != undefined ) ? $tEl.getPercentage() : 0;
 
-						transitionSwap($tEl, true);
+					transitionSwap($tEl, false);
 
-					if (start && stop ) {
-					    var deltaX = Math.abs(start.coords[0] - stop.coords[0]),
-							deltaY = Math.abs(start.coords[1] - stop.coords[1]),
-							left = start.coords[0] > stop.coords[0],
-							jumppoint;
+					function moveHandler(e) {
+						var data = e.originalEvent.touches ? e.originalEvent.touches[0] : e;
+							stop = {
+								'time': +new Date,
+								'coords': [ data.pageX, data.pageY ]
+							},
+							deltaX = Math.abs( start.coords[0] - data.pageX ),
+							deltaY = Math.abs( start.coords[1] - data.pageY );
 
-							if( deltaX > 20 && ( deltaX > deltaY ) ) {
-								e.preventDefault();
-							} else {
-								if( start.interacting ) {
+						if( !start || deltaX < deltaY || deltaX < 55 ) {
+							return;
+						}
+
+						// prevent scrolling
+						if ( deltaX >= 55 ) {
+							start.interacting = true;
+							$tEl.css({"margin-left": currentPos + ( ( (stop.coords[0] - start.coords[0]) / start.origin.width() ) * 100 ) + '%' });
+							e.preventDefault();
+						} else {
+							return;
+						}
+					};
+
+					$el
+						.bind("gesturestart", function(e) {
+							$el
+								.unbind("touchmove", moveHandler)
+								.unbind("touchend", moveHandler);
+						})
+						.bind("touchmove", moveHandler)
+						.one("touchend", function(e) {
+							$el.unbind("touchmove", moveHandler);
+
+							transitionSwap($tEl, true);
+
+						if (start && stop ) {
+						    var deltaX = Math.abs(start.coords[0] - stop.coords[0]),
+								deltaY = Math.abs(start.coords[1] - stop.coords[1]),
+								left = start.coords[0] > stop.coords[0],
+								jumppoint;
+
+								if( deltaX > 20 && ( deltaX > deltaY ) ) {
+									e.preventDefault();
+								} else {
+									if( start.interacting ) {
+										$el.trigger('snapback', { 'target': $tEl, 'left': left });
+									}
+									return;
+								}
+
+								jumppoint = start.origin.width() / 4;
+
+								if( -deltaX > jumppoint || deltaX > jumppoint ) {
+									start.origin.trigger("dragSnap", {'direction': left ? "left" : "right"});
+								} else {
 									$el.trigger('snapback', { 'target': $tEl, 'left': left });
 								}
-								return;
-							}
+						}
+						start = stop = undefined;
+					});
+			});
+		}
+	};
 
-							jumppoint = start.origin.width() / 4;
-
-							if( -deltaX > jumppoint || deltaX > jumppoint ) {
-								start.origin.trigger("dragSnap", {'direction': left ? "left" : "right"});
-							} else {
-								$el.trigger('snapback', { 'target': $tEl, 'left': left });
-							}
-					}
-					start = stop = undefined;
-				});
-		});
-	}
-};
 })(jQuery);
