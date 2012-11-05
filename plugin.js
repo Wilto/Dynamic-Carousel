@@ -336,7 +336,8 @@
 				var $el = $(this),
 					link = this.hash,
 					dir = ( $el.is(opt.prevSlide) ) ? 'prev' : 'next',
-					$slider = $(link);
+					$slider = $(link)
+					event = '';
 
 					if ( $el.is('.' + opt.namespace + '-disabled') ) {
 						return false;
@@ -354,7 +355,8 @@
 			})
 			.bind('keydown', function(e) {
 				var $el = $(this),
-					link = this.hash;
+					link = this.hash
+				event = '';
 				
 				if(opt.backToStart) {
 					event = 'notauto';
@@ -383,6 +385,7 @@
 		$slidewrap.bind( "dragSnap", setup, function(e, ui){
 			var $slider = $(this).find( opt.slider ),
 				dir = ( ui.direction === "left" ) ? 'next' : 'prev';
+			event = '';
 
 			if(opt.backToStart) {
 				event = 'notauto';
