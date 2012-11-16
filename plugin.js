@@ -39,6 +39,7 @@
 			prevSlide		: null,
 			nextSlide		: null,
 			slideHed		: null,
+			paginationEl	: null,
 			addPagination	: false,
 			addNav			: ( config != undefined && ( config.prevSlide || config.nextSlide ) ) ? false : true,
 			namespace		: 'carousel',
@@ -140,7 +141,8 @@
 			},
 			addPagination : function() {
 				$slidewrap.each(function(i) {
-					var $oEl        = $(this),
+					var $oEl      = $(this),
+						$paginEl	= (!!opt.paginationEl) ? $(opt.paginationEl) : $oEl,
 						$pagination = $('<ol class="' + opt.namespace + '-tabs" role="tablist navigation" />'),
 						$slider     = $oEl.find(opt.slider),
 						$slides     = $oEl.find(opt.slide)
@@ -161,10 +163,9 @@
 					};
 
 					$pagination
-						.appendTo( $oEl )
+						.appendTo( $paginEl )
 						.find('li').keydown( function(e) {
-							var $el      = $(this),
-								$prevTab = $el.prev().find('a'),
+							var $prevTab = $el.prev().find('a'),
 								$nextTab = $el.next().find('a');
 
 							switch( e.which ) {
@@ -218,7 +219,6 @@
 				// Update state of next/prev navigation:
 				if( ( !!opt.prevSlide || !!opt.nextSlide ) ) {
 					var $target = $('[href*="#' + this.id + '"]');
-
 					$target.removeClass( opt.namespace + '-disabled' );
 
 					if( ind == 0 ) {
