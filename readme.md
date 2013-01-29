@@ -1,6 +1,10 @@
 # A Responsive Carousel
 If there's one thing that can compete with lightboxes for “world’s most done-to-death jQuery plugin,” it’s carousels. However, everything I came across was using pixel values and not percentages—meaning I wasn’t finding much of anything that could be used on a responsive/flexible layout. So I built one.
 
+## DISCLAIMER:
+
+This project is no longer being actively developed! The official [Filament Group Responsive Carousel](https://github.com/filamentgroup/responsive-carousel) is the new hotness.
+
 ## It Just Got Real
 We got pagination, we got generated navigation, we got keyboard support, and we got accessibility for days.
 
