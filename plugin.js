@@ -16,7 +16,7 @@
 
 		if (diff !== 0) {
 			$slides.css( "position", "relative" );
-
+			
 			for (var i = 0; i < $slides.length; i++) {
 				$slides.eq(i).css( "left", (diff * i) + "px" );
 			}
@@ -42,7 +42,8 @@
 			addPagination	: false,
 			addNav			: ( config != undefined && ( config.prevSlide || config.nextSlide ) ) ? false : true,
 			namespace		: 'carousel',
-			speed			: 300
+			speed			: 600,
+			backToStart		: true
 		},
 		opt               = $.extend(defaults, config),
 		$slidewrap        = this,
@@ -220,11 +221,12 @@
 					var $target = $('[href*="#' + this.id + '"]');
 
 					$target.removeClass( opt.namespace + '-disabled' );
-
-					if( ind == 0 ) {
-						$target.filter(opt.prevSlide).addClass( opt.namespace + '-disabled' );
-					} else if( ind == $slides.length - 1 ) {
-						$target.filter(opt.nextSlide).addClass( opt.namespace + '-disabled' );
+					if(!opt.backToStart) {
+						if( ind == 0 ) {
+							$target.filter(opt.prevSlide).addClass( opt.namespace + '-disabled' );
+						} else if( ind == $slides.length - 1 ) {
+							$target.filter(opt.nextSlide).addClass( opt.namespace + '-disabled' );
+						}
 					}
 				}
 
@@ -260,7 +262,7 @@
 				if( transitionSupport() ) {
 
 					$el
-						.adjRounding( opt.slide ) /* Accounts for browser rounding errors. Lookin’ at you, iOS Safari. */
+						.adjRounding( opt.slide ) /* Accounts for browser rounding errors. Lookinâ€™ at you, iOS Safari. */
 						.css('marginLeft', ui.moveTo + "%")
 						.one("transitionend webkitTransitionEnd OTransitionEnd", function() {
 							$(this).trigger( opt.namespace + "-aftermove" );
@@ -280,37 +282,48 @@
 					$slide = $el.find(opt.slide),
 					constrain = ui.dir === 'prev' ? left != 0 : -left < ($slide.length - 1) * 100,
 					$target = $( '[href="#' + this.id + '"]');
-
+					
 				if (!$el.is(":animated") && constrain ) {
-
+					
 					if ( ui.dir === 'prev' ) {
 						left = ( left % 100 != 0 ) ? carousel.roundDown(left) : left + 100;
 					} else {
 						left = ( ( left % 100 ) != 0 ) ? carousel.roundDown(left) - 100 : left - 100;
 					}
-
+					
 					$el.trigger('carouselmove', { 'moveTo': left });
 
 					$target
 						.removeClass( opt.namespace + '-disabled')
 						.removeAttr('aria-disabled');
 
-					switch( left ) {
-						case ( -($slide.length - 1) * 100 ):
-							$target.filter(opt.nextSlide)
-								.addClass( opt.namespace + '-disabled')
-								.attr('aria-disabled', true);
-							break;
-						case 0:
-							$target.filter(opt.prevSlide)
-								.addClass( opt.namespace + '-disabled')
-								.attr('aria-disabled', true);
-							break;
+					if(!opt.backToStart) {
+						switch( left ) {
+							case ( -($slide.length - 1) * 100 ):
+								$target.filter(opt.nextSlide)
+									.addClass( opt.namespace + '-disabled')
+									.attr('aria-disabled', true);
+								break;
+							case 0:
+								$target.filter(opt.prevSlide)
+									.addClass( opt.namespace + '-disabled')
+									.attr('aria-disabled', true);
+								break;
+						}
 					}
 				} else {
 					var reset = carousel.roundDown(left);
-
-					$el.trigger('carouselmove', { 'moveTo': reset });
+					
+					if(opt.backToStart) {					
+						if ( ui.dir === 'next' ) {
+							left = 0;
+						} else if ( ui.dir === 'prev' && ui.event === 'notauto' ) {
+							left = -($slide.length - 1) * 100;
+						}
+						$el.trigger('carouselmove', { 'moveTo': left });
+					} else {
+						$el.trigger('carouselmove', { 'moveTo': reset });
+					}
 				}
 
 			}
@@ -323,29 +336,43 @@
 				var $el = $(this),
 					link = this.hash,
 					dir = ( $el.is(opt.prevSlide) ) ? 'prev' : 'next',
-					$slider = $(link);
+					$slider = $(link),
+					event = '';
 
 					if ( $el.is('.' + opt.namespace + '-disabled') ) {
 						return false;
 					}
 
-					$slider.trigger('nextprev', { 'dir': dir });
+					if(opt.backToStart) {
+						event = 'notauto';
+					} else {
+						event = '';
+					}
+					
+					$slider.trigger('nextprev', { 'dir': dir, 'event': event });
 
 				e.preventDefault();
 			})
 			.bind('keydown', function(e) {
 				var $el = $(this),
-					link = this.hash;
-
+			            link = this.hash,
+				    event = '';
+				
+				if(opt.backToStart) {
+					event = 'notauto';
+				} else {
+					event = '';
+				}
+				
 				switch (e.which) {
 					case 37:
 					case 38:
-						$('#' + link).trigger('nextprev', { 'dir': 'next' });
+						$('#' + link).trigger('nextprev', { 'dir': 'next', 'event': event });
 						e.preventDefault();
 						break;
 					case 39:
 					case 40:
-						$('#' + link).trigger('nextprev', { 'dir': 'prev' });
+						$('#' + link).trigger('nextprev', { 'dir': 'prev', 'event': event });
 						e.preventDefault();
 						break;
 				}
@@ -357,9 +384,16 @@
 		};
 		$slidewrap.bind( "dragSnap", setup, function(e, ui){
 			var $slider = $(this).find( opt.slider ),
-				dir = ( ui.direction === "left" ) ? 'next' : 'prev';
+			    dir = ( ui.direction === "left" ) ? 'next' : 'prev',
+			    event = '';
 
-			$slider.trigger("nextprev", { 'dir': dir });
+			if (opt.backToStart) {
+				event = 'notauto';
+			} else {
+				event = '';
+			}
+
+			$slider.trigger("nextprev", { 'dir': dir, 'event': event });
 		});
 
 
@@ -371,11 +405,11 @@
 				autoAdvance = function() {
 					var $slider  = $el.find(opt.slider),
 						active   = -( $(opt.slider).getPercentage() / 100 ) + 1;
-
+						
 					switch( active ) {
 						case slidenum:
 							clearInterval(auto);
-
+							
 							auto = setInterval(function() {
 								autoAdvance();
 								$slider.trigger("nextprev", { 'dir': 'prev' });
@@ -530,3 +564,4 @@
 	};
 
 })(jQuery);
+/*! End of homepage and product carousel */
