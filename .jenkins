@@ -1,2 +1,3 @@
-user: objlog
+user: NONE
 subdomain: foo
+subdir: _foo
